@@ -267,7 +267,6 @@ top_gst_vendors = df_year.groupby('Purchase Vendor Name')['Vendor GST In'].sum()
 st.bar_chart(top_gst_vendors, use_container_width=True)
 st.dataframe(top_gst_vendors.reset_index().rename(columns={'Purchase Vendor Name': 'Vendor', 'Vendor GST In': 'GST Paid'}).style.format("₹{:,.2f}"))
 
-
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability Overview")
