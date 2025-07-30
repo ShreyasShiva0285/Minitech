@@ -181,10 +181,14 @@ elif selected_tab == "📈 Trends & customers Data":
 # 🧾 Tax Summary
 elif selected_tab == "🧾 Tax Summary":
     st.title("🧾 GST Summary & Breakdown")
-    st.markdown("Track GST input and output for compliance and reconciliation.")
-    # (your existing logic stays here)
-    st.title(f"🧾 GST Breakdown - {selected_year}")
+    st.markdown("""
+    Track GST input and output for compliance and reconciliation.
+    This section gives a detailed look at GST Inward (Input Credit) vs GST Outward (Collected).
+    """)
 
+    st.subheader(f"GST Breakdown - {selected_year}")
+
+    # Calculate GST breakdown
     gst_breakdown = {
         'CGST Out': df_year['sales_Tax Amount CGST'].sum(),
         'SGST Out': df_year['sales_Tax Amount SGST'].sum(),
@@ -194,8 +198,10 @@ elif selected_tab == "🧾 Tax Summary":
         'IGST In': df_year['Purchase Tax Amount IGST'].sum(),
     }
 
+    # Convert to DataFrame
     gst_df = pd.DataFrame.from_dict(gst_breakdown, orient='index', columns=['Amount'])
 
+    # Pie chart of GST distribution
     gst_df_reset = gst_df.reset_index().rename(columns={'index': 'GST Type'})
     fig_pie = px.pie(
         gst_df_reset,
@@ -206,9 +212,11 @@ elif selected_tab == "🧾 Tax Summary":
     )
     fig_pie.update_traces(textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
+
+    # Show GST breakdown table
     st.dataframe(gst_df.style.format("₹{:,.2f}"))
 
-    # ✅ New GST Input vs Output table
+    # Net Payable GST Table
     net_gst_df = pd.DataFrame({
         'GST Type': ['CGST', 'SGST', 'IGST'],
         'Outward GST': [gst_breakdown['CGST Out'], gst_breakdown['SGST Out'], gst_breakdown['IGST Out']],
@@ -219,8 +227,10 @@ elif selected_tab == "🧾 Tax Summary":
             gst_breakdown['IGST Out'] - gst_breakdown['IGST In'],
         ]
     })
-    st.write("### 🔍 Net GST Payable / Receivable")
+
+    st.subheader("🔍 Net GST Payable / Receivable")
     st.dataframe(net_gst_df.style.format("₹{:,.2f}"))
+
 
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
