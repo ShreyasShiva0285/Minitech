@@ -30,8 +30,8 @@ def load_data():
 df = load_data()
 
 # Sidebar
-st.sidebar.title("🔍 Dashboard Navigation")
-tabs = ["📋 Overview", "📊 Summary", "📈 Trends", "🧾 Tax Summary", "💹 Profitability"]
+st.sidebar.title("🔍 Minitech Engineering Pvt Ltd...")
+tabs = ["📋 Overview Of the Company", "📊 Summary Of Sales and Revenue", "📈 Trends & customers Data", "🧾 Tax Summary", "💹 Profitability"]
 selected_tab = st.sidebar.radio("Go to", tabs)
 
 # Time filter - Apply to both sales and purchase years
