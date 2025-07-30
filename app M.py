@@ -31,7 +31,7 @@ df = load_data()
 
 # Sidebar
 st.sidebar.title("🔍 Dashboard Navigation")
-tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "💹 Profitability"]
+tabs = ["📋 Overview", "📊 Summary", "📈 Trends", "🧾 Tax Summary", "💹 Profitability"]
 selected_tab = st.sidebar.radio("Go to", tabs)
 
 # Time filter - Apply to both sales and purchase years
@@ -49,8 +49,40 @@ df_year = df[
     (df['Purchase Invoice Date'].dt.year == selected_year)
 ]
 
+# TAB 0 - Overview
+if selected_tab == "📋 Overview":
+    st.title(f"📋 Executive Overview – {selected_year}")
+
+    # Metrics Summary
+    total_sales = df_year['sales_Grand Amount'].sum()
+    total_purchases = df_year['Purchase Grand Amount'].sum()
+    gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].sum().sum()
+    gst_in = df_year[['Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST']].sum().sum()
+    net_profit = total_sales - total_purchases - gst_out
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("📈 Total Sales", f"₹{total_sales:,.2f}")
+    col2.metric("📉 Total Purchases", f"₹{total_purchases:,.2f}")
+    col3.metric("💰 Net Profit", f"₹{net_profit:,.2f}")
+
+    col4, col5 = st.columns(2)
+    col4.metric("🧾 GST Collected (Out)", f"₹{gst_out:,.2f}")
+    col5.metric("🧾 GST Paid (In)", f"₹{gst_in:,.2f}")
+
+    st.markdown("---")
+
+    # Profit Margins
+    gross_margin = (total_sales - total_purchases) / total_sales * 100 if total_sales else 0
+    profit_margin = net_profit / total_sales * 100 if total_sales else 0
+
+    col6, col7 = st.columns(2)
+    col6.metric("📊 Gross Margin", f"{gross_margin:.2f}%")
+    col7.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
+
+    st.markdown("This overview summarizes your key financial health indicators for the selected year.")
+
 # 🔍 TAB 1 - Summary
-if selected_tab == "📊 Summary":
+elif selected_tab == "📊 Summary":
     st.subheader(f"📊 Summary - {selected_year}")
 
     # Total Revenue
@@ -76,13 +108,11 @@ if selected_tab == "📊 Summary":
     else:
         st.warning("⚠️ 'sales_Customer Name' column not found.")
 
-
 # TAB 2 - Trends
 elif selected_tab == "📈 Trends":
     st.title(f"📈 Trends - {selected_year}")
 
     # --- SALES PERFORMANCE ---
-
     st.subheader("📈 Monthly Sales Trend")
     sales_trend = df_year.dropna(subset=['sales_Invoice Date']).groupby(
         df_year['sales_Invoice Date'].dt.to_period("M")
@@ -110,7 +140,6 @@ elif selected_tab == "📈 Trends":
     st.table(frequent_clients)
 
     # --- PURCHASE MONITORING ---
-
     st.subheader("📊 Monthly Purchases Trend")
     purchase_trend = df_year.dropna(subset=['Purchase Invoice Date']).groupby(
         df_year['Purchase Invoice Date'].dt.to_period("M")
@@ -137,7 +166,6 @@ elif selected_tab == "📈 Trends":
     )
     st.table(frequent_vendors)
 
-
 # TAB 3 - Tax Summary
 elif selected_tab == "🧾 Tax Summary":
     st.title(f"🧾 GST Breakdown - {selected_year}")
@@ -153,27 +181,36 @@ elif selected_tab == "🧾 Tax Summary":
 
     gst_df = pd.DataFrame.from_dict(gst_breakdown, orient='index', columns=['Amount'])
 
-    # ✅ Pie Chart instead of bar
     gst_df_reset = gst_df.reset_index().rename(columns={'index': 'GST Type'})
     fig_pie = px.pie(
         gst_df_reset,
         names='GST Type',
         values='Amount',
         title='GST In vs Out Distribution',
-        hole=0.4  # Optional donut chart
+        hole=0.4
     )
     fig_pie.update_traces(textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
-
-    # Table below the pie chart
     st.dataframe(gst_df.style.format("₹{:,.2f}"))
 
+    # ✅ New GST Input vs Output table
+    net_gst_df = pd.DataFrame({
+        'GST Type': ['CGST', 'SGST', 'IGST'],
+        'Outward GST': [gst_breakdown['CGST Out'], gst_breakdown['SGST Out'], gst_breakdown['IGST Out']],
+        'Input Credit': [gst_breakdown['CGST In'], gst_breakdown['SGST In'], gst_breakdown['IGST In']],
+        'Net Payable': [
+            gst_breakdown['CGST Out'] - gst_breakdown['CGST In'],
+            gst_breakdown['SGST Out'] - gst_breakdown['SGST In'],
+            gst_breakdown['IGST Out'] - gst_breakdown['IGST In'],
+        ]
+    })
+    st.write("### 🔍 Net GST Payable / Receivable")
+    st.dataframe(net_gst_df.style.format("₹{:,.2f}"))
 
 # TAB 4 – Profitability Overview
 elif selected_tab == "💹 Profitability":
     st.title(f"💹 Profitability Overview - {selected_year}")
 
-    # Define required values
     total_sales = df_year['sales_Grand Amount'].sum()
     total_purchases = df_year['Purchase Grand Amount'].sum()
     gst_out = (
@@ -183,7 +220,6 @@ elif selected_tab == "💹 Profitability":
     )
     net_profit = total_sales - total_purchases - gst_out
 
-    # Waterfall Chart
     st.subheader("📊 Profit Composition Waterfall Chart")
     fig_waterfall = go.Figure(go.Waterfall(
         name="Profit Flow",
@@ -195,12 +231,9 @@ elif selected_tab == "💹 Profitability":
         connector={"line": {"color": "gray"}}
     ))
     fig_waterfall.update_layout(title="Profit Composition Waterfall", waterfallgap=0.5)
-
     st.plotly_chart(fig_waterfall, use_container_width=True)
 
-    # Monthly Profit Chart (Quarterly works better for large data)
     st.subheader("📅 Quarterly Profit Trend")
-
     df_year['Quarter'] = df_year['sales_Invoice Date'].dt.to_period("Q").astype(str)
     quarterly_profit = df_year.groupby('Quarter').agg({
         'sales_Grand Amount': 'sum',
@@ -218,8 +251,3 @@ elif selected_tab == "💹 Profitability":
     fig_bar.update_traces(texttemplate='₹%{text:,.2f}', textposition='outside')
     fig_bar.update_layout(yaxis_title="₹", xaxis_title="Quarter", uniformtext_minsize=8, uniformtext_mode='hide')
     st.plotly_chart(fig_bar, use_container_width=True)
-
-
-
-    #st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
-
