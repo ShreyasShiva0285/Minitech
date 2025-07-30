@@ -238,12 +238,12 @@ st.dataframe(net_gst_df.style.format({
     'Input Credit': "₹{:,.2f}",
     'Net Payable': "₹{:,.2f}"
 }))
+
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability Overview")
     st.markdown("Analyze profit composition, quarterly trends, and visualize earnings breakdown.")
-    # (your existing logic stays here)
-st.title(f"💹 Profitability Overview - {selected_year}")
+    st.title(f"💹 Profitability Overview - {selected_year}")
 
     total_sales = df_year['sales_Grand Amount'].sum()
     total_purchases = df_year['Purchase Grand Amount'].sum()
@@ -285,3 +285,4 @@ st.title(f"💹 Profitability Overview - {selected_year}")
     fig_bar.update_traces(texttemplate='₹%{text:,.2f}', textposition='outside')
     fig_bar.update_layout(yaxis_title="₹", xaxis_title="Quarter", uniformtext_minsize=8, uniformtext_mode='hide')
     st.plotly_chart(fig_bar, use_container_width=True)
+
