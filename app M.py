@@ -240,8 +240,8 @@ st.dataframe(net_gst_df.style.format({
 }))
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
-st.title("💹 Profitability Overview")
-st.markdown("Analyze profit composition, quarterly trends, and visualize earnings breakdown.")
+    st.title("💹 Profitability Overview")
+    st.markdown("Analyze profit composition, quarterly trends, and visualize earnings breakdown.")
     # (your existing logic stays here)
 st.title(f"💹 Profitability Overview - {selected_year}")
 
