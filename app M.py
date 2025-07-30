@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -8,57 +7,62 @@ import plotly.express as px
 def load_data():
     df = pd.read_csv("updated_sales_purchase_data.csv")
 
-    # Clean numeric fields
-    df["sales_Grand Amount"] = pd.to_numeric(df["sales_Grand Amount"], errors="coerce").fillna(0)
-    df["Purchase Grand Amount"] = pd.to_numeric(df["Purchase Grand Amount"], errors="coerce").fillna(0)
-
-    # Clean date and extract year
-    df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'], errors='coerce')
+    # Convert dates
+    df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'], dayfirst=True, errors='coerce')
+    df['Purchase Invoice Date'] = pd.to_datetime(df['Purchase Invoice Date'], dayfirst=True, errors='coerce')
     df['sales_Year'] = df['sales_Invoice Date'].dt.year
 
-    # Calculate Net Profit
-    df['Net Profit'] = df["sales_Grand Amount"] - df["Purchase Grand Amount"]
+    # Convert monetary and tax fields to numeric
+    num_cols = [
+        'sales_Grand Amount', 'Purchase Grand Amount',
+        'sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST',
+        'Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST'
+    ]
+    for col in num_cols:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # Compute Net Profit
+    df['Net Profit'] = df['sales_Grand Amount'] - df['Purchase Grand Amount']
+
     return df
 
 df = load_data()
 
-# 📅 Sidebar Year Selector (make sure this is placed before the summary block)
-df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'])
-df['sales_Year'] = df['sales_Invoice Date'].dt.year
+# Sidebar
+st.sidebar.title("🔍 Dashboard Navigation")
+tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "👥 People", "📋 Invoices"]
+selected_tab = st.sidebar.radio("Go to", tabs)
 
+# Time filter
 years = sorted(df['sales_Year'].dropna().unique())
 selected_year = st.sidebar.selectbox("📅 Select Year", years)
+df_year = df[df['sales_Year'] == selected_year]
 
-df_year = df[df['sales_Year'] == selected_year]  # Filter data by selected year
-
-
-# 🔍 TAB 1 - Summary
+# TAB 1 - Summary
 if selected_tab == "📊 Summary":
-    st.subheader(f"📊 Summary - {selected_year}")
+    st.title(f"📊 Business Summary - {selected_year}")
+    
+    total_sales = df_year['sales_Grand Amount'].sum()
+    total_purchase = df_year['Purchase Grand Amount'].sum()
+    net_profit = df_year['Net Profit'].sum()
 
-    # Total Revenue
-    total_revenue = df_year['sales_Grand Amount'].sum()
-    st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
+    gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].sum().sum()
+    gst_in = df_year[['Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST']].sum().sum()
+    gst_liability = gst_out - gst_in
 
-    # GST Paid = CGST + SGST
-    gst_paid = df_year['sales_Tax Amount CGST'].sum() + df_year['sales_Tax Amount SGST'].sum()
-    st.metric("GST Paid", f"₹{gst_paid:,.2f}")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("💰 Total Revenue", f"₹{total_sales:,.2f}")
+    col2.metric("💸 Total Purchase", f"₹{total_purchase:,.2f}")
+    col3.metric("📈 Net Profit", f"₹{net_profit:,.2f}")
 
-    # IGST Paid
-    igst_paid = df_year['sales_Tax Amount IGST'].sum()
-    st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
+    col4, col5, col6 = st.columns(3)
+    col4.metric("🧾 GST Output", f"₹{gst_out:,.2f}")
+    col5.metric("📥 GST Input", f"₹{gst_in:,.2f}")
+    col6.metric("⚖️ GST Payable", f"₹{gst_liability:,.2f}")
 
-    # Top 5 Clients by Sales
-    st.subheader("🏆 Top 5 Clients by Sales")
-    if 'sales_Customer Name' in df_year.columns:
-        top_clients = df_year.groupby("sales_Customer Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
-        st.table(top_clients.rename(columns={
-            "sales_Customer Name": "Client",
-            "sales_Grand Amount": "Total Sales"
-        }))
-    else:
-        st.warning("⚠️ 'sales_Customer Name' column not found.")
-
+    col7, col8 = st.columns(2)
+    col7.metric("👥 Unique Customers", df_year['sales_Customer Name'].nunique())
+    col8.metric("🏢 Unique Vendors", df_year['Purchase Customer Name'].nunique())
 
 # TAB 2 - Trends
 elif selected_tab == "📈 Trends":
@@ -71,11 +75,11 @@ elif selected_tab == "📈 Trends":
     purchase_trend['Purchase Invoice Date'] = purchase_trend['Purchase Invoice Date'].dt.to_timestamp()
 
     st.subheader("🟩 Monthly Sales")
-    fig1 = px.line(sales_trend, x='sales_Invoice Date', y='sales_Grand Amount', markers=True)
+    fig1 = px.line(sales_trend, x='sales_Invoice Date', y='sales_Grand Amount', markers=True, title="Monthly Sales")
     st.plotly_chart(fig1, use_container_width=True)
 
     st.subheader("🟥 Monthly Purchases")
-    fig2 = px.line(purchase_trend, x='Purchase Invoice Date', y='Purchase Grand Amount', markers=True)
+    fig2 = px.line(purchase_trend, x='Purchase Invoice Date', y='Purchase Grand Amount', markers=True, title="Monthly Purchases")
     st.plotly_chart(fig2, use_container_width=True)
 
 # TAB 3 - Tax Summary
@@ -93,7 +97,6 @@ elif selected_tab == "🧾 Tax Summary":
 
     gst_df = pd.DataFrame.from_dict(gst_breakdown, orient='index', columns=['Amount'])
     st.bar_chart(gst_df)
-
     st.dataframe(gst_df.style.format("₹{:,.2f}"))
 
 # TAB 4 - People Overview
@@ -114,9 +117,20 @@ elif selected_tab == "📋 Invoices":
     st.title(f"📋 All Invoices - {selected_year}")
 
     st.subheader("🧾 Sales Invoices")
-    st.dataframe(df_year[['sales_Invoice Number', 'sales_Invoice Date', 'sales_Customer Name', 'sales_Grand Amount']].sort_values(by='sales_Invoice Date').reset_index(drop=True))
+    st.dataframe(
+        df_year[['sales_Invoice Number', 'sales_Invoice Date', 'sales_Customer Name', 'sales_Grand Amount']]
+        .sort_values(by='sales_Invoice Date')
+        .reset_index(drop=True)
+        .style.format({"sales_Grand Amount": "₹{:,.2f}"})
+    )
 
     st.subheader("📥 Purchase Invoices")
-    st.dataframe(df_year[['Purchase Invoice Number', 'Purchase Invoice Date', 'Purchase Customer Name', 'Purchase Grand Amount']].sort_values(by='Purchase Invoice Date').reset_index(drop=True))
+    st.dataframe(
+        df_year[['Purchase Invoice Number', 'Purchase Invoice Date', 'Purchase Customer Name', 'Purchase Grand Amount']]
+        .sort_values(by='Purchase Invoice Date')
+        .reset_index(drop=True)
+        .style.format({"Purchase Grand Amount": "₹{:,.2f}"})
+    )
 
     st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
+
