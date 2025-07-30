@@ -86,8 +86,12 @@ if selected_tab == "📋 Overview Of the Company":
 
     st.markdown("This overview summarizes your key financial health indicators for the selected year.")
 
-# 🔍 TAB 1 - Summary Of Sales and Revenue
-elif selected_tab == "📊 Summary":
+# 📊 Summary Tab
+elif selected_tab == "📊 Summary Of Sales and Revenue":
+    st.title("📊 Sales and Revenue Summary")
+    st.markdown("Snapshot of total sales, GST paid, and top clients to give a high-level view of business performance.")
+    st.subheader(f"📊 Summary - {selected_year}")
+    # (your existing logic stays here)
     st.subheader(f"📊 Summary - {selected_year}")
 
     # Total Revenue
@@ -113,8 +117,11 @@ elif selected_tab == "📊 Summary":
     else:
         st.warning("⚠️ 'sales_Customer Name' column not found.")
 
-# TAB 2 - Trends & customers Data
-elif selected_tab == "📈 Trends":
+# 📈 Trends Tab
+elif selected_tab == "📈 Trends & customers Data":
+    st.title("📈 Sales Trends & Customer Insights")
+    st.markdown("Visualize monthly trends and explore top customers and vendors by revenue and frequency.")
+    # (your existing logic stays here)
     st.title(f"📈 Trends - {selected_year}")
 
     # --- SALES PERFORMANCE ---
@@ -171,8 +178,11 @@ elif selected_tab == "📈 Trends":
     )
     st.table(frequent_vendors)
 
-# TAB 3 - Tax Summary
+# 🧾 Tax Summary
 elif selected_tab == "🧾 Tax Summary":
+    st.title("🧾 GST Summary & Breakdown")
+    st.markdown("Track GST input and output for compliance and reconciliation.")
+    # (your existing logic stays here)
     st.title(f"🧾 GST Breakdown - {selected_year}")
 
     gst_breakdown = {
@@ -212,8 +222,11 @@ elif selected_tab == "🧾 Tax Summary":
     st.write("### 🔍 Net GST Payable / Receivable")
     st.dataframe(net_gst_df.style.format("₹{:,.2f}"))
 
-# TAB 4 – Profitability Overview
+# 💹 Profitability
 elif selected_tab == "💹 Profitability":
+    st.title("💹 Profitability Overview")
+    st.markdown("Analyze profit composition, quarterly trends, and visualize earnings breakdown.")
+    # (your existing logic stays here)
     st.title(f"💹 Profitability Overview - {selected_year}")
 
     total_sales = df_year['sales_Grand Amount'].sum()
