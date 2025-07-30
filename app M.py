@@ -22,55 +22,43 @@ def load_data():
 
 df = load_data()
 
-# Sidebar
-st.sidebar.title("🔍 Dashboard Navigation")
-tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "👥 People", "📋 Invoices"]
-selected_tab = st.sidebar.radio("Go to", tabs)
+# 📅 Sidebar Year Selector (make sure this is placed before the summary block)
+df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'])
+df['sales_Year'] = df['sales_Invoice Date'].dt.year
 
-# Time filter
 years = sorted(df['sales_Year'].dropna().unique())
 selected_year = st.sidebar.selectbox("📅 Select Year", years)
 
-df_year = df[df['sales_Year'] == selected_year]
+df_year = df[df['sales_Year'] == selected_year]  # Filter data by selected year
 
-# Clean column names (remove leading/trailing spaces)
-df.columns = df.columns.str.strip()
 
-# TAB 1 - Summary
+# 🔍 TAB 1 - Summary
 if selected_tab == "📊 Summary":
-    st.subheader("📊 Summary")
+    st.subheader(f"📊 Summary - {selected_year}")
 
     # Total Revenue
-    if 'sales_Grand Amount' in df.columns:
-        total_revenue = df['sales_Grand Amount'].sum()
-        st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
-    else:
-        st.warning("⚠️ 'sales_Grand Amount' column not found.")
+    total_revenue = df_year['sales_Grand Amount'].sum()
+    st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
 
-    # GST Paid
-    if 'sales_GST' in df.columns:
-        gst_paid = df['sales_GST'].sum()
-        st.metric("GST Paid", f"₹{gst_paid:,.2f}")
-    else:
-        st.warning("⚠️ 'sales_GST' column not found.")
+    # GST Paid = CGST + SGST
+    gst_paid = df_year['sales_Tax Amount CGST'].sum() + df_year['sales_Tax Amount SGST'].sum()
+    st.metric("GST Paid", f"₹{gst_paid:,.2f}")
 
     # IGST Paid
-    if 'sales_IGST' in df.columns:
-        igst_paid = df['sales_IGST'].sum()
-        st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
-    else:
-        st.warning("⚠️ 'sales_IGST' column not found.")
+    igst_paid = df_year['sales_Tax Amount IGST'].sum()
+    st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
 
     # Top 5 Clients by Sales
     st.subheader("🏆 Top 5 Clients by Sales")
-    if 'sales_Client Name' in df.columns and 'sales_Grand Amount' in df.columns:
-        top_clients = df.groupby("sales_Client Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
+    if 'sales_Customer Name' in df_year.columns:
+        top_clients = df_year.groupby("sales_Customer Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
         st.table(top_clients.rename(columns={
-            "sales_Client Name": "Client",
+            "sales_Customer Name": "Client",
             "sales_Grand Amount": "Total Sales"
         }))
     else:
-        st.warning("⚠️ Columns needed for top clients not found.")
+        st.warning("⚠️ 'sales_Customer Name' column not found.")
+
 
 # TAB 2 - Trends
 elif selected_tab == "📈 Trends":
