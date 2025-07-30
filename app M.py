@@ -171,19 +171,17 @@ elif selected_tab == "💹 Profitability":
 
     # Waterfall Chart
     st.subheader("📊 Profit Composition Waterfall Chart")
-    fig_waterfall = px.waterfall(
-        name="Profit Flow",
-        orientation="v",
-        x=["Total Sales", "Purchases", "GST Paid", "Net Profit"],
-        y=[total_sales, -total_purchases, -gst_out, net_profit],
-        text=[
-            f"₹{total_sales:,.2f}",
-            f"-₹{total_purchases:,.2f}",
-            f"-₹{gst_out:,.2f}",
-            f"₹{net_profit:,.2f}"
-        ],
-        title="Profit Breakdown"
-    )
+fig_waterfall = go.Figure(go.Waterfall(
+    name="Profit Flow",
+    orientation="v",
+    measure=["relative", "relative", "relative", "total"],
+    x=["Total Sales", "(-) Purchases", "(-) GST Paid", "Net Profit"],
+    y=[total_sales, -total_purchases, -gst_out, net_profit],
+    text=[f"₹{total_sales:,.2f}", f"-₹{total_purchases:,.2f}", f"-₹{gst_out:,.2f}", f"₹{net_profit:,.2f}"],
+    connector={"line": {"color": "gray"}}
+))
+fig_waterfall.update_layout(title="Profit Composition Waterfall", waterfallgap=0.5)
+
     st.plotly_chart(fig_waterfall, use_container_width=True)
 
     # Monthly Profit Chart (Quarterly works better for large data)
