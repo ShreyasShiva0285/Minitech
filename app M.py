@@ -33,31 +33,29 @@ selected_year = st.sidebar.selectbox("📅 Select Year", years)
 
 df_year = df[df['sales_Year'] == selected_year]
 
-# TAB 1 - Summary
-if selected_tab == "📊 Summary":
-    st.title(f"📊 Business Summary - {selected_year}")
+# Summary
+st.subheader("Summary")
 
-    total_sales = df_year['sales_Grand Amount'].sum()
-    total_purchase = df_year['Purchase Grand Amount'].sum()
-    net_profit = df_year['Net Profit'].sum()
+# Total Revenue
+total_revenue = df['sales_Grand Amount'].sum()
+st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
 
-    gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].apply(pd.to_numeric, errors='coerce').sum().sum()
-    gst_in = df_year[['Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST']].apply(pd.to_numeric, errors='coerce').sum().sum()
-    gst_liability = gst_out - gst_in
+# GST Paid
+gst_paid = df['sales_GST'].sum()
+st.metric("GST Paid", f"₹{gst_paid:,.2f}")
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("💰 Total Revenue", f"₹{total_sales:,.2f}")
-    col2.metric("💸 Total Purchase", f"₹{total_purchase:,.2f}")
-    col3.metric("📈 Net Profit", f"₹{net_profit:,.2f}")
+# IGST Paid
+igst_paid = df['sales_IGST'].sum()
+st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
 
-    col4, col5, col6 = st.columns(3)
-    col4.metric("🧾 GST Output", f"₹{gst_out:,.2f}")
-    col5.metric("📥 GST Input", f"₹{gst_in:,.2f}")
-    col6.metric("⚖️ GST Payable", f"₹{gst_liability:,.2f}")
+# Top 5 Clients by Sales
+st.subheader("Top 5 Clients by Sales")
+top_clients = df.groupby("sales_Client Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
+st.table(top_clients.rename(columns={
+    "sales_Client Name": "Client",
+    "sales_Grand Amount": "Total Sales"
+}))
 
-    col7, col8 = st.columns(2)
-    col7.metric("👥 Unique Customers", df_year['sales_Customer Name'].nunique())
-    col8.metric("🏢 Unique Vendors", df_year['Purchase Customer Name'].nunique())
 
 # TAB 2 - Trends
 elif selected_tab == "📈 Trends":
