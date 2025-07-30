@@ -203,5 +203,5 @@ fig_waterfall.update_layout(
 st.plotly_chart(fig_waterfall, use_container_width=True)
 
 
-    st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
+    #st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
 
