@@ -177,7 +177,43 @@ elif selected_tab == "📈 Trends & customers Data":
 
 elif selected_tab == "🧾 Tax Summary":
     st.title("🧾 GST Summary & Breakdown")
-    ...
+
+    # Check if the required columns are present
+    required_columns = [
+        'sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST',
+        'Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST'
+    ]
+    for col in required_columns:
+        if col not in df_year.columns:
+            df_year[col] = 0  # Add missing column with 0 values
+
+    # Calculate GST breakdown
+    gst_breakdown = {
+        'CGST Out': df_year['sales_Tax Amount CGST'].sum(),
+        'SGST Out': df_year['sales_Tax Amount SGST'].sum(),
+        'IGST Out': df_year['sales_Tax Amount IGST'].sum(),
+        'CGST In': df_year['Purchase Tax Amount CGST'].sum(),
+        'SGST In': df_year['Purchase Tax Amount SGST'].sum(),
+        'IGST In': df_year['Purchase Tax Amount IGST'].sum(),
+    }
+
+    # Create dataframe for GST summary
+    net_gst_df = pd.DataFrame({
+        'GST Type': ['CGST', 'SGST', 'IGST'],
+        'Outward GST': [
+            gst_breakdown['CGST Out'], gst_breakdown['SGST Out'], gst_breakdown['IGST Out']
+        ],
+        'Input Credit': [
+            gst_breakdown['CGST In'], gst_breakdown['SGST In'], gst_breakdown['IGST In']
+        ],
+        'Net Payable': [
+            gst_breakdown['CGST Out'] - gst_breakdown['CGST In'],
+            gst_breakdown['SGST Out'] - gst_breakdown['SGST In'],
+            gst_breakdown['IGST Out'] - gst_breakdown['IGST In'],
+        ]
+    })
+
+    # Format and display GST Summary
     st.subheader("🔍 Net GST Payable / Receivable")
     st.dataframe(net_gst_df.style.format({
         'Outward GST': "₹{:,.2f}",
@@ -185,16 +221,17 @@ elif selected_tab == "🧾 Tax Summary":
         'Net Payable': "₹{:,.2f}"
     }))
 
-    # ✅ ADD BELOW: GST-Contributing Clients & Vendors
+    # 🏆 Top GST-Contributing Clients
     st.markdown("---")
     st.subheader("🏆 Top GST-Contributing Clients")
 
-    # Calculate GST Out (collected) per client
+    # Add Client GST Out column
     df_year['Client GST Out'] = (
         df_year['sales_Tax Amount CGST'].fillna(0) +
         df_year['sales_Tax Amount SGST'].fillna(0) +
         df_year['sales_Tax Amount IGST'].fillna(0)
     )
+
     if 'sales_Customer Name' in df_year.columns:
         top_gst_clients = (
             df_year.groupby('sales_Customer Name')['Client GST Out']
@@ -206,16 +243,18 @@ elif selected_tab == "🧾 Tax Summary":
             'Client GST Out': 'GST Collected'
         }).style.format("₹{:,.2f}"))
     else:
-        st.warning("⚠️ 'sales_Customer Name' column not found.")
+        st.warning("⚠️ 'sales_Customer Name' column not found in your data.")
 
+    # 🏢 Top GST-Contributing Vendors
     st.subheader("🏢 Top GST-Contributing Vendors")
 
-    # Calculate GST In (paid) per vendor
+    # Add Vendor GST In column
     df_year['Vendor GST In'] = (
         df_year['Purchase Tax Amount CGST'].fillna(0) +
         df_year['Purchase Tax Amount SGST'].fillna(0) +
         df_year['Purchase Tax Amount IGST'].fillna(0)
     )
+
     if 'Purchase Customer Name' in df_year.columns:
         top_gst_vendors = (
             df_year.groupby('Purchase Customer Name')['Vendor GST In']
@@ -227,7 +266,7 @@ elif selected_tab == "🧾 Tax Summary":
             'Vendor GST In': 'GST Paid'
         }).style.format("₹{:,.2f}"))
     else:
-        st.warning("⚠️ 'Purchase Customer Name' column not found.")
+        st.warning("⚠️ 'Purchase Customer Name' column not found in your data.")
 
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
