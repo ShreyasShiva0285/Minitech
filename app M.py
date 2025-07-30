@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 # Load your cleaned data
 @st.cache_data
@@ -180,30 +181,27 @@ elif selected_tab == "💰 Profitability":
     )
     st.plotly_chart(fig_profit, use_container_width=True)
 
-    # ➤ 2. Waterfall Chart: Sales → Purchases → GST → Net
-    st.subheader("📊 Profit Composition Waterfall Chart")
+# Waterfall using plotly.graph_objects
+fig_waterfall = go.Figure(go.Waterfall(
+    name="20XX",  # Optional label
+    orientation="v",
+    measure=["relative", "relative", "relative", "total"],
+    x=["Sales", "Purchases", "GST Out", "Net Profit"],
+    textposition="outside",
+    text=[f"₹{total_sales:,.2f}", f"-₹{total_purchases:,.2f}", f"-₹{gst_out:,.2f}", f"₹{net_profit:,.2f}"],
+    y=[total_sales, -total_purchases, -gst_out, net_profit],
+    connector={"line": {"color": "rgb(63, 63, 63)"}}
+))
 
-    total_sales = df_profit['sales_Grand Amount'].sum()
-    total_purchases = df_profit['Purchase Grand Amount'].sum()
-    gst_out = df_profit['sales_Tax Amount CGST'].sum() + df_profit['sales_Tax Amount SGST'].sum() + df_profit['sales_Tax Amount IGST'].sum()
-    net_profit = total_sales - total_purchases - gst_out
+fig_waterfall.update_layout(
+    title="💸 Sales → Purchases → GST → Net Profit",
+    waterfallgap=0.4,
+    showlegend=False,
+    yaxis_title="Amount (₹)"
+)
 
-    waterfall_df = pd.DataFrame({
-        "Stage": ["Sales", "Purchases", "GST Out", "Net Profit"],
-        "Amount": [total_sales, -total_purchases, -gst_out, net_profit],
-        "Measure": ["relative", "relative", "relative", "total"]
-    })
+st.plotly_chart(fig_waterfall, use_container_width=True)
 
-    fig_waterfall = px.waterfall(
-        waterfall_df,
-        x="Stage",
-        y="Amount",
-        measure="Measure",
-        title="Sales → Purchases → GST → Net Profit",
-        text="Amount"
-    )
-    fig_waterfall.update_traces(texttemplate="₹%{y:,.2f}")
-    st.plotly_chart(fig_waterfall, use_container_width=True)
 
     st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
 
