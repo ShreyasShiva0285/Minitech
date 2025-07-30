@@ -152,8 +152,22 @@ elif selected_tab == "🧾 Tax Summary":
     }
 
     gst_df = pd.DataFrame.from_dict(gst_breakdown, orient='index', columns=['Amount'])
-    st.bar_chart(gst_df)
+
+    # ✅ Pie Chart instead of bar
+    gst_df_reset = gst_df.reset_index().rename(columns={'index': 'GST Type'})
+    fig_pie = px.pie(
+        gst_df_reset,
+        names='GST Type',
+        values='Amount',
+        title='GST In vs Out Distribution',
+        hole=0.4  # Optional donut chart
+    )
+    fig_pie.update_traces(textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
+
+    # Table below the pie chart
     st.dataframe(gst_df.style.format("₹{:,.2f}"))
+
 
 # TAB 4 – Profitability Overview
 elif selected_tab == "💹 Profitability":
