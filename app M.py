@@ -182,7 +182,7 @@ fig_waterfall = go.Figure(go.Waterfall(
 ))
 fig_waterfall.update_layout(title="Profit Composition Waterfall", waterfallgap=0.5)
 
-    st.plotly_chart(fig_waterfall, use_container_width=True)
+st.plotly_chart(fig_waterfall, use_container_width=True)
 
     # Monthly Profit Chart (Quarterly works better for large data)
     st.subheader("📅 Quarterly Profit Trend")
