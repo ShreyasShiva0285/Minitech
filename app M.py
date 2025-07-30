@@ -30,7 +30,7 @@ df = load_data()
 
 # Sidebar
 st.sidebar.title("🔍 Dashboard Navigation")
-tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "👥 People", "📋 Invoices"]
+tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "💰 Profitability"]
 selected_tab = st.sidebar.radio("Go to", tabs)
 
 # Time filter - Apply to both sales and purchase years
@@ -154,38 +154,56 @@ elif selected_tab == "🧾 Tax Summary":
     st.bar_chart(gst_df)
     st.dataframe(gst_df.style.format("₹{:,.2f}"))
 
-# TAB 4 - People Overview
-elif selected_tab == "👥 People":
-    st.title(f"👥 Customer & Vendor Overview - {selected_year}")
+# TAB 4 - Profitability
+elif selected_tab == "💰 Profitability":
+    st.title(f"💰 Profitability Overview - {selected_year}")
 
-    top_clients = df_year.groupby('sales_Customer Name')['sales_Grand Amount'].sum().sort_values(ascending=False).head(5)
-    top_vendors = df_year.groupby('Purchase Customer Name')['Purchase Grand Amount'].sum().sort_values(ascending=False).head(5)
+    # ➤ 1. Quarterly Profit Chart
+    df_profit = df_year.copy()
 
-    st.subheader("🏆 Top 5 Clients by Sales")
-    st.dataframe(top_clients.reset_index().rename(columns={'sales_Grand Amount': 'Amount'}).style.format("₹{:,.2f}"))
+    df_profit['Quarter'] = df_profit['sales_Invoice Date'].dt.to_period("Q").astype(str)
+    profit_by_quarter = df_profit.groupby('Quarter').agg({
+        'sales_Grand Amount': 'sum',
+        'Purchase Grand Amount': 'sum'
+    }).reset_index()
+    profit_by_quarter['Net Profit'] = profit_by_quarter['sales_Grand Amount'] - profit_by_quarter['Purchase Grand Amount']
 
-    st.subheader("📦 Top 5 Vendors by Spend")
-    st.dataframe(top_vendors.reset_index().rename(columns={'Purchase Grand Amount': 'Amount'}).style.format("₹{:,.2f}"))
-
-# TAB 5 - Invoices
-elif selected_tab == "📋 Invoices":
-    st.title(f"📋 All Invoices - {selected_year}")
-
-    st.subheader("🧾 Sales Invoices")
-    st.dataframe(
-        df_year[['sales_Invoice Number', 'sales_Invoice Date', 'sales_Customer Name', 'sales_Grand Amount']]
-        .sort_values(by='sales_Invoice Date')
-        .reset_index(drop=True)
-        .style.format({"sales_Grand Amount": "₹{:,.2f}"})
+    st.subheader("📅 Quarterly Profit Trend (Sales – Purchases)")
+    fig_profit = px.bar(
+        profit_by_quarter,
+        x='Quarter',
+        y='Net Profit',
+        color='Net Profit',
+        color_continuous_scale='Teal',
+        labels={'Net Profit': '₹ Net Profit'},
+        title="Quarterly Profit Trend"
     )
+    st.plotly_chart(fig_profit, use_container_width=True)
 
-    st.subheader("📥 Purchase Invoices")
-    st.dataframe(
-        df_year[['Purchase Invoice Number', 'Purchase Invoice Date', 'Purchase Customer Name', 'Purchase Grand Amount']]
-        .sort_values(by='Purchase Invoice Date')
-        .reset_index(drop=True)
-        .style.format({"Purchase Grand Amount": "₹{:,.2f}"})
+    # ➤ 2. Waterfall Chart: Sales → Purchases → GST → Net
+    st.subheader("📊 Profit Composition Waterfall Chart")
+
+    total_sales = df_profit['sales_Grand Amount'].sum()
+    total_purchases = df_profit['Purchase Grand Amount'].sum()
+    gst_out = df_profit['sales_Tax Amount CGST'].sum() + df_profit['sales_Tax Amount SGST'].sum() + df_profit['sales_Tax Amount IGST'].sum()
+    net_profit = total_sales - total_purchases - gst_out
+
+    waterfall_df = pd.DataFrame({
+        "Stage": ["Sales", "Purchases", "GST Out", "Net Profit"],
+        "Amount": [total_sales, -total_purchases, -gst_out, net_profit],
+        "Measure": ["relative", "relative", "relative", "total"]
+    })
+
+    fig_waterfall = px.waterfall(
+        waterfall_df,
+        x="Stage",
+        y="Amount",
+        measure="Measure",
+        title="Sales → Purchases → GST → Net Profit",
+        text="Amount"
     )
+    fig_waterfall.update_traces(texttemplate="₹%{y:,.2f}")
+    st.plotly_chart(fig_waterfall, use_container_width=True)
 
     st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
 
