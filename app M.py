@@ -216,22 +216,28 @@ elif selected_tab == "🧾 Tax Summary":
     # Show GST breakdown table
     st.dataframe(gst_df.style.format("₹{:,.2f}"))
 
-    # Net Payable GST Table
-    net_gst_df = pd.DataFrame({
-        'GST Type': ['CGST', 'SGST', 'IGST'],
-        'Outward GST': [gst_breakdown['CGST Out'], gst_breakdown['SGST Out'], gst_breakdown['IGST Out']],
-        'Input Credit': [gst_breakdown['CGST In'], gst_breakdown['SGST In'], gst_breakdown['IGST In']],
-        'Net Payable': [
-            gst_breakdown['CGST Out'] - gst_breakdown['CGST In'],
-            gst_breakdown['SGST Out'] - gst_breakdown['SGST In'],
-            gst_breakdown['IGST Out'] - gst_breakdown['IGST In'],
-        ]
-    })
+   # Net Payable GST Table
+net_gst_df = pd.DataFrame({
+    'GST Type': ['CGST', 'SGST', 'IGST'],
+    'Outward GST': [gst_breakdown['CGST Out'], gst_breakdown['SGST Out'], gst_breakdown['IGST Out']],
+    'Input Credit': [gst_breakdown['CGST In'], gst_breakdown['SGST In'], gst_breakdown['IGST In']],
+    'Net Payable': [
+        gst_breakdown['CGST Out'] - gst_breakdown['CGST In'],
+        gst_breakdown['SGST Out'] - gst_breakdown['SGST In'],
+        gst_breakdown['IGST Out'] - gst_breakdown['IGST In'],
+    ]
+})
 
-    st.subheader("🔍 Net GST Payable / Receivable")
-    st.dataframe(net_gst_df.style.format("₹{:,.2f}"))
+# Ensure all numerical columns are floats and replace any NaNs
+for col in ['Outward GST', 'Input Credit', 'Net Payable']:
+    net_gst_df[col] = pd.to_numeric(net_gst_df[col], errors='coerce').fillna(0.0)
 
-
+st.subheader("🔍 Net GST Payable / Receivable")
+st.dataframe(net_gst_df.style.format({
+    'Outward GST': "₹{:,.2f}",
+    'Input Credit': "₹{:,.2f}",
+    'Net Payable': "₹{:,.2f}"
+}))
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability Overview")
