@@ -31,7 +31,7 @@ df = load_data()
 
 # Sidebar
 st.sidebar.title("🔍 Dashboard Navigation")
-tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "💰 Profitability"]
+tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "💹 Profitability"]
 selected_tab = st.sidebar.radio("Go to", tabs)
 
 # Time filter - Apply to both sales and purchase years
