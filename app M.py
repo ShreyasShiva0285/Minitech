@@ -33,29 +33,29 @@ selected_year = st.sidebar.selectbox("📅 Select Year", years)
 
 df_year = df[df['sales_Year'] == selected_year]
 
-# Summary
-st.subheader("Summary")
+# TAB 1 - Summary
+if selected_tab == "📊 Summary":
+    st.subheader("Summary")
 
-# Total Revenue
-total_revenue = df['sales_Grand Amount'].sum()
-st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
+    # Total Revenue
+    total_revenue = df['sales_Grand Amount'].sum()
+    st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
 
-# GST Paid
-gst_paid = df['sales_GST'].sum()
-st.metric("GST Paid", f"₹{gst_paid:,.2f}")
+    # GST Paid
+    gst_paid = df['sales_GST'].sum()
+    st.metric("GST Paid", f"₹{gst_paid:,.2f}")
 
-# IGST Paid
-igst_paid = df['sales_IGST'].sum()
-st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
+    # IGST Paid
+    igst_paid = df['sales_IGST'].sum()
+    st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
 
-# Top 5 Clients by Sales
-st.subheader("Top 5 Clients by Sales")
-top_clients = df.groupby("sales_Client Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
-st.table(top_clients.rename(columns={
-    "sales_Client Name": "Client",
-    "sales_Grand Amount": "Total Sales"
-}))
-
+    # Top 5 Clients by Sales
+    st.subheader("Top 5 Clients by Sales")
+    top_clients = df.groupby("sales_Client Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
+    st.table(top_clients.rename(columns={
+        "sales_Client Name": "Client",
+        "sales_Grand Amount": "Total Sales"
+    }))
 
 # TAB 2 - Trends
 elif selected_tab == "📈 Trends":
