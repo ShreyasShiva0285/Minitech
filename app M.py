@@ -33,15 +33,20 @@ st.sidebar.title("🔍 Dashboard Navigation")
 tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "👥 People", "📋 Invoices"]
 selected_tab = st.sidebar.radio("Go to", tabs)
 
-# Time filter
-# 📅 Sidebar Year Selector (make sure this is placed before the summary block)
-df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'])
-df['sales_Year'] = df['sales_Invoice Date'].dt.year
+# Time filter - Apply to both sales and purchase years
+all_years = pd.concat([
+    df['sales_Invoice Date'].dropna().dt.year,
+    df['Purchase Invoice Date'].dropna().dt.year
+]).dropna().unique()
 
-years = sorted(df['sales_Year'].dropna().unique())
+years = sorted(all_years)
 selected_year = st.sidebar.selectbox("📅 Select Year", years)
 
-df_year = df[df['sales_Year'] == selected_year]  # Filter data by selected year
+# Filter data for selected year for both sales and purchases
+df_year = df[
+    (df['sales_Invoice Date'].dt.year == selected_year) |
+    (df['Purchase Invoice Date'].dt.year == selected_year)
+]
 
 # 🔍 TAB 1 - Summary
 if selected_tab == "📊 Summary":
@@ -75,19 +80,62 @@ if selected_tab == "📊 Summary":
 elif selected_tab == "📈 Trends":
     st.title(f"📈 Trends - {selected_year}")
 
-    sales_trend = df_year.groupby(df_year['sales_Invoice Date'].dt.to_period("M"))['sales_Grand Amount'].sum().reset_index()
+    # --- SALES PERFORMANCE ---
+
+    st.subheader("📈 Monthly Sales Trend")
+    sales_trend = df_year.dropna(subset=['sales_Invoice Date']).groupby(
+        df_year['sales_Invoice Date'].dt.to_period("M")
+    )['sales_Grand Amount'].sum().reset_index()
     sales_trend['sales_Invoice Date'] = sales_trend['sales_Invoice Date'].dt.to_timestamp()
 
-    purchase_trend = df_year.groupby(df_year['Purchase Invoice Date'].dt.to_period("M"))['Purchase Grand Amount'].sum().reset_index()
-    purchase_trend['Purchase Invoice Date'] = purchase_trend['Purchase Invoice Date'].dt.to_timestamp()
-
-    st.subheader("🟩 Monthly Sales")
-    fig1 = px.line(sales_trend, x='sales_Invoice Date', y='sales_Grand Amount', markers=True, title="Monthly Sales")
+    fig1 = px.line(sales_trend, x='sales_Invoice Date', y='sales_Grand Amount', markers=True,
+                   title="Monthly Sales")
     st.plotly_chart(fig1, use_container_width=True)
 
-    st.subheader("🟥 Monthly Purchases")
-    fig2 = px.line(purchase_trend, x='Purchase Invoice Date', y='Purchase Grand Amount', markers=True, title="Monthly Purchases")
+    st.subheader("👤 Top 5 Customers by Revenue")
+    top_customers = (
+        df_year.groupby("sales_Customer Name")["sales_Grand Amount"]
+        .sum().nlargest(5).reset_index()
+        .rename(columns={"sales_Customer Name": "Customer", "sales_Grand Amount": "Total Revenue"})
+    )
+    st.table(top_customers)
+
+    st.subheader("🧾 Most Frequent Invoice Clients")
+    frequent_clients = (
+        df_year["sales_Customer Name"]
+        .value_counts().head(5).reset_index()
+        .rename(columns={"index": "Customer", "sales_Customer Name": "No. of Invoices"})
+    )
+    st.table(frequent_clients)
+
+    # --- PURCHASE MONITORING ---
+
+    st.subheader("📊 Monthly Purchases Trend")
+    purchase_trend = df_year.dropna(subset=['Purchase Invoice Date']).groupby(
+        df_year['Purchase Invoice Date'].dt.to_period("M")
+    )['Purchase Grand Amount'].sum().reset_index()
+    purchase_trend['Purchase Invoice Date'] = purchase_trend['Purchase Invoice Date'].dt.to_timestamp()
+
+    fig2 = px.line(purchase_trend, x='Purchase Invoice Date', y='Purchase Grand Amount', markers=True,
+                   title="Monthly Purchases")
     st.plotly_chart(fig2, use_container_width=True)
+
+    st.subheader("🧍‍♂️ Top 5 Vendors by Spend")
+    top_vendors = (
+        df_year.groupby("Purchase Customer Name")["Purchase Grand Amount"]
+        .sum().nlargest(5).reset_index()
+        .rename(columns={"Purchase Customer Name": "Vendor", "Purchase Grand Amount": "Total Spend"})
+    )
+    st.table(top_vendors)
+
+    st.subheader("🧾 Frequent Vendors")
+    frequent_vendors = (
+        df_year["Purchase Customer Name"]
+        .value_counts().head(5).reset_index()
+        .rename(columns={"index": "Vendor", "Purchase Customer Name": "No. of Purchases"})
+    )
+    st.table(frequent_vendors)
+
 
 # TAB 3 - Tax Summary
 elif selected_tab == "🧾 Tax Summary":
