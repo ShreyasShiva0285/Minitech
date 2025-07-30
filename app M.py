@@ -90,9 +90,6 @@ if selected_tab == "📋 Overview Of the Company":
 elif selected_tab == "📊 Summary Of Sales and Revenue":
     st.title("📊 Sales and Revenue Summary")
     st.markdown("Snapshot of total sales, GST paid, and top clients to give a high-level view of business performance.")
-    st.subheader(f"📊 Summary - {selected_year}")
-    # (your existing logic stays here)
-    st.subheader(f"📊 Summary - {selected_year}")
 
     # Total Revenue
     total_revenue = df_year['sales_Grand Amount'].sum()
@@ -122,10 +119,10 @@ elif selected_tab == "📈 Trends & customers Data":
     st.title("📈 Sales Trends & Customer Insights")
     st.markdown("Visualize monthly trends and explore top customers and vendors by revenue and frequency.")
     # (your existing logic stays here)
-    st.title(f"📈 Trends - {selected_year}")
+    st.title(f"Company Trends - {selected_year}")
 
     # --- SALES PERFORMANCE ---
-    st.subheader("📈 Monthly Sales Trend")
+    st.subheader(" Monthly Sales Trend")
     sales_trend = df_year.dropna(subset=['sales_Invoice Date']).groupby(
         df_year['sales_Invoice Date'].dt.to_period("M")
     )['sales_Grand Amount'].sum().reset_index()
