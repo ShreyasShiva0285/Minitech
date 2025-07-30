@@ -7,11 +7,14 @@ import plotly.express as px
 @st.cache_data
 def load_data():
     df = pd.read_csv("updated_sales_purchase_data.csv")
-    df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'], dayfirst=True)
-    df['Purchase Invoice Date'] = pd.to_datetime(df['Purchase Invoice Date'], dayfirst=True)
-    df['sales_Year'] = df['sales_Invoice Date'].dt.year
-    df['Net Profit'] = df['sales_Grand Amount'] - df['Purchase Grand Amount']
+
+    # Convert to numeric (force errors to NaN, then fill with 0)
+    df["sales_Grand Amount"] = pd.to_numeric(df["sales_Grand Amount"], errors="coerce").fillna(0)
+    df["Purchase Grand Amount"] = pd.to_numeric(df["Purchase Grand Amount"], errors="coerce").fillna(0)
+
+    df['Net Profit'] = df["sales_Grand Amount"] - df["Purchase Grand Amount"]
     return df
+
 
 df = load_data()
 
