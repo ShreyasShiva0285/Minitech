@@ -185,39 +185,40 @@ elif selected_tab == "💹 Profitability":
 
     # Waterfall Chart
     st.subheader("📊 Profit Composition Waterfall Chart")
-fig_waterfall = go.Figure(go.Waterfall(
-    name="Profit Flow",
-    orientation="v",
-    measure=["relative", "relative", "relative", "total"],
-    x=["Total Sales", "(-) Purchases", "(-) GST Paid", "Net Profit"],
-    y=[total_sales, -total_purchases, -gst_out, net_profit],
-    text=[f"₹{total_sales:,.2f}", f"-₹{total_purchases:,.2f}", f"-₹{gst_out:,.2f}", f"₹{net_profit:,.2f}"],
-    connector={"line": {"color": "gray"}}
-))
-fig_waterfall.update_layout(title="Profit Composition Waterfall", waterfallgap=0.5)
+    fig_waterfall = go.Figure(go.Waterfall(
+        name="Profit Flow",
+        orientation="v",
+        measure=["relative", "relative", "relative", "total"],
+        x=["Total Sales", "(-) Purchases", "(-) GST Paid", "Net Profit"],
+        y=[total_sales, -total_purchases, -gst_out, net_profit],
+        text=[f"₹{total_sales:,.2f}", f"-₹{total_purchases:,.2f}", f"-₹{gst_out:,.2f}", f"₹{net_profit:,.2f}"],
+        connector={"line": {"color": "gray"}}
+    ))
+    fig_waterfall.update_layout(title="Profit Composition Waterfall", waterfallgap=0.5)
 
-st.plotly_chart(fig_waterfall, use_container_width=True)
+    st.plotly_chart(fig_waterfall, use_container_width=True)
 
-# Monthly Profit Chart (Quarterly works better for large data)
-st.subheader("📅 Quarterly Profit Trend")
+    # Monthly Profit Chart (Quarterly works better for large data)
+    st.subheader("📅 Quarterly Profit Trend")
 
-df_year['Quarter'] = df_year['sales_Invoice Date'].dt.to_period("Q").astype(str)
-quarterly_profit = df_year.groupby('Quarter').agg({
-'sales_Grand Amount': 'sum',
-'Purchase Grand Amount': 'sum'
+    df_year['Quarter'] = df_year['sales_Invoice Date'].dt.to_period("Q").astype(str)
+    quarterly_profit = df_year.groupby('Quarter').agg({
+        'sales_Grand Amount': 'sum',
+        'Purchase Grand Amount': 'sum'
     }).reset_index()
-quarterly_profit['Net Profit'] = quarterly_profit['sales_Grand Amount'] - quarterly_profit['Purchase Grand Amount']
+    quarterly_profit['Net Profit'] = quarterly_profit['sales_Grand Amount'] - quarterly_profit['Purchase Grand Amount']
 
-fig_bar = px.bar(
+    fig_bar = px.bar(
         quarterly_profit,
         x='Quarter',
         y='Net Profit',
         title='Quarterly Net Profit',
         text='Net Profit'
     )
-fig_bar.update_traces(texttemplate='₹%{text:,.2f}', textposition='outside')
-fig_bar.update_layout(yaxis_title="₹", xaxis_title="Quarter", uniformtext_minsize=8, uniformtext_mode='hide')
-st.plotly_chart(fig_bar, use_container_width=True)
+    fig_bar.update_traces(texttemplate='₹%{text:,.2f}', textposition='outside')
+    fig_bar.update_layout(yaxis_title="₹", xaxis_title="Quarter", uniformtext_minsize=8, uniformtext_mode='hide')
+    st.plotly_chart(fig_bar, use_container_width=True)
+
 
 
     #st.download_button("⬇️ Download Sales Invoices", df_year.to_csv(index=False), "sales_data.csv", "text/csv")
