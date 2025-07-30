@@ -235,6 +235,38 @@ elif selected_tab == "🧾 Tax Summary":
         'Input Credit': "₹{:,.2f}",
         'Net Payable': "₹{:,.2f}"
     }))
+# --------------------------------------------
+# 🔝 GST Heavy Clients & Vendors (New Section)
+# --------------------------------------------
+st.subheader("🏆 Top GST-Contributing Clients")
+
+# Calculate GST Out (collected) per client
+df_year['Client GST Out'] = (
+    df_year['sales_Tax Amount CGST'].fillna(0) +
+    df_year['sales_Tax Amount SGST'].fillna(0) +
+    df_year['sales_Tax Amount IGST'].fillna(0)
+)
+top_gst_clients = df_year.groupby('sales_Client Name')['Client GST Out'].sum().sort_values(ascending=False).head(10)
+
+# Display
+st.bar_chart(top_gst_clients, use_container_width=True)
+st.dataframe(top_gst_clients.reset_index().rename(columns={'sales_Client Name': 'Client', 'Client GST Out': 'GST Collected'}).style.format("₹{:,.2f}"))
+
+
+st.subheader("🏢 Top GST-Contributing Vendors")
+
+# Calculate GST In (paid) per vendor
+df_year['Vendor GST In'] = (
+    df_year['Purchase Tax Amount CGST'].fillna(0) +
+    df_year['Purchase Tax Amount SGST'].fillna(0) +
+    df_year['Purchase Tax Amount IGST'].fillna(0)
+)
+top_gst_vendors = df_year.groupby('Purchase Vendor Name')['Vendor GST In'].sum().sort_values(ascending=False).head(10)
+
+# Display
+st.bar_chart(top_gst_vendors, use_container_width=True)
+st.dataframe(top_gst_vendors.reset_index().rename(columns={'Purchase Vendor Name': 'Vendor', 'Vendor GST In': 'GST Paid'}).style.format("₹{:,.2f}"))
+
 
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
