@@ -34,9 +34,14 @@ tabs = ["📊 Summary", "📈 Trends", "🧾 Tax Summary", "👥 People", "📋 
 selected_tab = st.sidebar.radio("Go to", tabs)
 
 # Time filter
+# 📅 Sidebar Year Selector (make sure this is placed before the summary block)
+df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'])
+df['sales_Year'] = df['sales_Invoice Date'].dt.year
+
 years = sorted(df['sales_Year'].dropna().unique())
 selected_year = st.sidebar.selectbox("📅 Select Year", years)
-df_year = df[df['sales_Year'] == selected_year]
+
+df_year = df[df['sales_Year'] == selected_year]  # Filter data by selected year
 
 # TAB 1 - Summary
 if selected_tab == "📊 Summary":
