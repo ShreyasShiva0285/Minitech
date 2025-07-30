@@ -49,7 +49,7 @@ df_year = df[
     (df['Purchase Invoice Date'].dt.year == selected_year)
 ]
 
-# TAB 0 - Overview
+# TAB 0 - Overview Of the Company
 if selected_tab == "📋 Overview":
     st.title(f"📋 Executive Overview – {selected_year}")
 
@@ -81,7 +81,7 @@ if selected_tab == "📋 Overview":
 
     st.markdown("This overview summarizes your key financial health indicators for the selected year.")
 
-# 🔍 TAB 1 - Summary
+# 🔍 TAB 1 - Summary Of Sales and Revenue
 elif selected_tab == "📊 Summary":
     st.subheader(f"📊 Summary - {selected_year}")
 
@@ -108,7 +108,7 @@ elif selected_tab == "📊 Summary":
     else:
         st.warning("⚠️ 'sales_Customer Name' column not found.")
 
-# TAB 2 - Trends
+# TAB 2 - Trends & customers Data
 elif selected_tab == "📈 Trends":
     st.title(f"📈 Trends - {selected_year}")
 
