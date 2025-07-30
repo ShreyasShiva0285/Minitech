@@ -8,13 +8,17 @@ import plotly.express as px
 def load_data():
     df = pd.read_csv("updated_sales_purchase_data.csv")
 
-    # Convert to numeric (force errors to NaN, then fill with 0)
+    # Clean numeric fields
     df["sales_Grand Amount"] = pd.to_numeric(df["sales_Grand Amount"], errors="coerce").fillna(0)
     df["Purchase Grand Amount"] = pd.to_numeric(df["Purchase Grand Amount"], errors="coerce").fillna(0)
 
+    # Clean date and extract year
+    df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'], errors='coerce')
+    df['sales_Year'] = df['sales_Invoice Date'].dt.year
+
+    # Calculate Net Profit
     df['Net Profit'] = df["sales_Grand Amount"] - df["Purchase Grand Amount"]
     return df
-
 
 df = load_data()
 
