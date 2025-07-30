@@ -56,7 +56,7 @@ if selected_tab == "📋 Overview Of the Company":
     Welcome to the business intelligence dashboard.  
     Use the sidebar to navigate through Sales, Trends, Tax Summary, and Profitability.
     """)
-    st.title(f"📋 Executive Overview – {selected_year}")
+    st.title(f" Executive Overview of the Company – {selected_year}")
 
     # Metrics Summary
     total_sales = df_year['sales_Grand Amount'].sum()
