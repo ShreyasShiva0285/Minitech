@@ -33,29 +33,44 @@ selected_year = st.sidebar.selectbox("📅 Select Year", years)
 
 df_year = df[df['sales_Year'] == selected_year]
 
+# Clean column names (remove leading/trailing spaces)
+df.columns = df.columns.str.strip()
+
 # TAB 1 - Summary
 if selected_tab == "📊 Summary":
-    st.subheader("Summary")
+    st.subheader("📊 Summary")
 
     # Total Revenue
-    total_revenue = df['sales_Grand Amount'].sum()
-    st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
+    if 'sales_Grand Amount' in df.columns:
+        total_revenue = df['sales_Grand Amount'].sum()
+        st.metric("Total Revenue", f"₹{total_revenue:,.2f}")
+    else:
+        st.warning("⚠️ 'sales_Grand Amount' column not found.")
 
     # GST Paid
-    gst_paid = df['sales_GST'].sum()
-    st.metric("GST Paid", f"₹{gst_paid:,.2f}")
+    if 'sales_GST' in df.columns:
+        gst_paid = df['sales_GST'].sum()
+        st.metric("GST Paid", f"₹{gst_paid:,.2f}")
+    else:
+        st.warning("⚠️ 'sales_GST' column not found.")
 
     # IGST Paid
-    igst_paid = df['sales_IGST'].sum()
-    st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
+    if 'sales_IGST' in df.columns:
+        igst_paid = df['sales_IGST'].sum()
+        st.metric("IGST Paid", f"₹{igst_paid:,.2f}")
+    else:
+        st.warning("⚠️ 'sales_IGST' column not found.")
 
     # Top 5 Clients by Sales
-    st.subheader("Top 5 Clients by Sales")
-    top_clients = df.groupby("sales_Client Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
-    st.table(top_clients.rename(columns={
-        "sales_Client Name": "Client",
-        "sales_Grand Amount": "Total Sales"
-    }))
+    st.subheader("🏆 Top 5 Clients by Sales")
+    if 'sales_Client Name' in df.columns and 'sales_Grand Amount' in df.columns:
+        top_clients = df.groupby("sales_Client Name")['sales_Grand Amount'].sum().nlargest(5).reset_index()
+        st.table(top_clients.rename(columns={
+            "sales_Client Name": "Client",
+            "sales_Grand Amount": "Total Sales"
+        }))
+    else:
+        st.warning("⚠️ Columns needed for top clients not found.")
 
 # TAB 2 - Trends
 elif selected_tab == "📈 Trends":
