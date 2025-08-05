@@ -268,6 +268,7 @@ elif selected_tab == "📈 Trends & customers Data":
 # -------------------- Tax Summary --------------------
 elif selected_tab == "🧾 Tax Summary":
     st.title("🧾 GST Summary & Breakdown")
+    
     for col in [
         'sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST',
         'Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST'
@@ -301,6 +302,27 @@ elif selected_tab == "🧾 Tax Summary":
         'Input Credit': "₹{:,.2f}",
         'Net Payable': "₹{:,.2f}"
     }))
+
+    # Pie Chart for Net GST Payable
+    st.subheader("📊 Net GST Payable Distribution")
+
+    fig_pie = px.pie(
+        net_gst_df,
+        names='GST Type',
+        values='Net Payable',
+        title='Net GST Payable by Type',
+        hole=0.4  # donut-style
+    )
+
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    fig_pie.update_layout(
+        showlegend=True,
+        font=dict(color=text_color),
+        paper_bgcolor=bg_color,
+        plot_bgcolor=plot_bg,
+    )
+
+    st.plotly_chart(fig_pie, use_container_width=True)
 
     # Clients and Vendors same as previous version (unchanged)...
 
