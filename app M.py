@@ -400,16 +400,16 @@ elif selected_tab == "🧾 Tax Summary":
         title='Net GST Payable by Type',
         hole=0.4  # donut-style
     )
-fig_pie.update_layout(
-    **plotly_layout("Net GST Payable by Type"),
-    showlegend=True
-)
-
-st.plotly_chart(fig_pie, use_container_width=True)
+    fig_pie.update_layout(
+        **plotly_layout("Net GST Payable by Type"),
+        showlegend=True
+    )
+    st.plotly_chart(fig_pie, use_container_width=True)
 
     # Clients and Vendors same as previous version (unchanged)...
 
 # -------------------- Profitability --------------------
+
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability")
     st.title(f"Profit & Loss Overview - {selected_year}")
