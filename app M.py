@@ -5,23 +5,51 @@ import plotly.graph_objects as go
 from sklearn.linear_model import LinearRegression
 import numpy as np
 
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
-# -------------------- Styling --------------------
+# -------------------- Styling and Theme Toggle --------------------
 st.set_page_config(layout="wide")
-st.markdown("""
+
+theme = st.sidebar.selectbox("🎨 Select Theme", ["Light", "Dark"])
+
+if theme == "Light":
+    bg_color = "#f9fafc"
+    text_color = "#1f2e3d"
+    plot_bg = "#ffffff"
+elif theme == "Dark":
+    bg_color = "#1e1e1e"
+    text_color = "#f5f5f5"
+    plot_bg = "#2c2c2c"
+
+# Inject CSS
+st.markdown(f"""
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <style>
-        html, body, [class*="css"] {
+        html, body, [class*="css"] {{
             font-family: 'Open Sans', sans-serif;
             font-size: 16px;
-        }
-        @media (max-width: 768px) {
-            html, body, [class*="css"] {
+            background-color: {bg_color};
+            color: {text_color};
+        }}
+        @media (max-width: 768px) {{
+            html, body, [class*="css"] {{
                 font-size: 14px;
-            }
-        }
-        h1, h2, h3, h4 {
-            color: #1f2e3d;
-        }
+            }}
+        }}
+        h1, h2, h3, h4 {{
+            color: {text_color};
+            font-weight: 600;
+        }}
+        .stMetric {{
+            background-color: {plot_bg};
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -29,7 +57,6 @@ st.markdown("""
 @st.cache_data
 def load_data():
     df = pd.read_csv("updated_sales_purchase_data.csv")
-
     df['sales_Invoice Date'] = pd.to_datetime(df['sales_Invoice Date'], dayfirst=True, errors='coerce')
     df['Purchase Invoice Date'] = pd.to_datetime(df['Purchase Invoice Date'], dayfirst=True, errors='coerce')
     df['sales_Year'] = df['sales_Invoice Date'].dt.year
@@ -64,15 +91,20 @@ df_year = df[
     (df['Purchase Invoice Date'].dt.year == selected_year)
 ]
 
-# -------------------- Plotly Theme --------------------
+# -------------------- Plotly Layout Theme --------------------
 def plotly_layout(title):
     return {
-        "title": {"text": title, "x": 0.5},
-        "paper_bgcolor": "rgba(0,0,0,0)",
-        "plot_bgcolor": "rgba(0,0,0,0)",
-        "font": {"family": "Open Sans", "size": 14},
-        "margin": {"l": 40, "r": 20, "t": 60, "b": 40}
+        "title": {"text": title, "x": 0.5, "font": {"size": 20}},
+        "paper_bgcolor": plot_bg,
+        "plot_bgcolor": plot_bg,
+        "font": {"family": "Open Sans", "size": 14, "color": text_color},
+        "margin": {"l": 40, "r": 20, "t": 60, "b": 40},
+        "xaxis": {"title_font": {"size": 14}, "tickangle": -45, "color": text_color},
+        "yaxis": {"title_font": {"size": 14}, "color": text_color},
+        "legend": {"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "right", "x": 1}
     }
+
+# -------------------- [REMAINDER OF YOUR CODE UNCHANGED] --------------------
 
 # -------------------- Overview Tab --------------------
 if selected_tab == "📋 Overview Of the Company":
