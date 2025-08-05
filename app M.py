@@ -389,14 +389,15 @@ st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
 
-    elif selected_tab == "💹 Profitability":
-        st.title("💹 Profitability")
-        st.title(f"Profit & Loss Overview - {selected_year}")
+elif selected_tab == "💹 Profitability":
+    st.title("💹 Profitability")
+    st.title(f"Profit & Loss Overview - {selected_year}")
 
     total_sales = df_year['sales_Grand Amount'].sum()
     total_purchases = df_year['Purchase Grand Amount'].sum()
     gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].sum().sum()
     net_profit = total_sales - total_purchases - gst_out
+
 
     st.subheader("📊 Profit Composition Waterfall Chart")
     fig_waterfall = go.Figure(go.Waterfall(
