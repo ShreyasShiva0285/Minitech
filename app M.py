@@ -218,8 +218,6 @@ def plotly_layout(title):
         "legend": {"orientation": "h", "yanchor": "bottom", "y": 1.02, "xanchor": "right", "x": 1}
     }
 
-# -------------------- [REMAINDER OF YOUR CODE UNCHANGED] --------------------
-
 # -------------------- Overview Tab --------------------
 if selected_tab == "📋 Overview Of the Company":
     st.title("📋 Company Dashboard Overview")
@@ -271,6 +269,7 @@ if selected_tab == "📋 Overview Of the Company":
     col7.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
 
 # -------------------- Summary Tab --------------------
+
 elif selected_tab == "📊 Summary Of Sales and Revenue":
     st.title("📊 Sales and Revenue Summary")
 
@@ -291,6 +290,7 @@ elif selected_tab == "📊 Summary Of Sales and Revenue":
         st.warning("⚠️ 'sales_Customer Name' column missing.")
 
 # -------------------- Trends Tab --------------------
+
 elif selected_tab == "📈 Trends & customers Data":
     st.title("📈 Sales Trends & Customer Insights")
     st.subheader(" Monthly Sales Trend")
@@ -332,6 +332,7 @@ elif selected_tab == "📈 Trends & customers Data":
     st.table(frequent_vendors)
 
 # -------------------- Tax Summary --------------------
+
 elif selected_tab == "🧾 Tax Summary":
     st.title("🧾 GST Summary & Breakdown")
     
@@ -388,6 +389,7 @@ fig_pie.update_layout(
 st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
+
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability")
     st.title(f"Profit & Loss Overview - {selected_year}")
