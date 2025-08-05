@@ -258,7 +258,6 @@ def plotly_layout(title):
 
 # -------------------- Overview Tab --------------------
 if selected_tab == "📋 Overview Of the Company":
-
         st.markdown("""
         <style>
         section.main > div:has(.block-container) {
