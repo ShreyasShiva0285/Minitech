@@ -369,21 +369,23 @@ elif selected_tab == "🧾 Tax Summary":
         'Net Payable': "₹{:,.2f}"
     }))
 
-    # Pie Chart for Net GST Payable
-    st.subheader("📊 Net GST Payable Distribution")
+st.subheader("📊 Net GST Payable Distribution")
 
-    fig_pie = px.pie(
-        net_gst_df,
-        names='GST Type',
-        values='Net Payable',
-        title='Net GST Payable by Type',
-        hole=0.4  # donut-style
-    )
-    fig_pie.update_layout(
-        **plotly_layout("Net GST Payable by Type"),
-        showlegend=True
-    )
-    st.plotly_chart(fig_pie, use_container_width=True)
+fig_pie = px.pie(
+    net_gst_df,
+    names='GST Type',
+    values='Net Payable',
+    title='Net GST Payable by Type',
+    hole=0.4  # donut-style
+)
+fig_pie.update_layout(
+    **plotly_layout("Net GST Payable by Type"),
+    showlegend=True,
+    font=dict(color="white"),
+    legend=dict(font=dict(color="white")),
+    title_font=dict(color="white")
+)
+st.plotly_chart(fig_pie, use_container_width=True)
 
     # Clients and Vendors same as previous version (unchanged)...
 
