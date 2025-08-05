@@ -387,13 +387,11 @@ fig_pie.update_layout(
 )
 st.plotly_chart(fig_pie, use_container_width=True)
 
-    # Clients and Vendors same as previous version (unchanged)...
-
 # -------------------- Profitability --------------------
 
 elif selected_tab == "💹 Profitability":
-    st.title("💹 Profitability")
-    st.title(f"Profit & Loss Overview - {selected_year}")
+st.title("💹 Profitability")
+st.title(f"Profit & Loss Overview - {selected_year}")
 
     total_sales = df_year['sales_Grand Amount'].sum()
     total_purchases = df_year['Purchase Grand Amount'].sum()
