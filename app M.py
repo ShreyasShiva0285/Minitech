@@ -21,14 +21,21 @@ if theme == "Light":
     bg_color = "#f9fafc"
     text_color = "#1f2e3d"
     plot_bg = "#ffffff"
+    primary_color = "#4a90e2"  # Add this
+    highlight_color = "#357edd"  # Optional, for button hover
 elif theme == "Dark":
     bg_color = "#1e1e1e"
     text_color = "#f5f5f5"
     plot_bg = "#2c2c2c"
+    primary_color = "#bb86fc"  # Add this
+    highlight_color = "#985eff"
 elif theme == "Modern Blue":
-    bg_color = "#0f172a"         # Dark navy (background)
-    text_color = "#e2e8f0"       # Light slate (text)
-    plot_bg = "#1e293b"          # Blue-gray (charts and containers)
+    bg_color = "#0f172a"
+    text_color = "#e2e8f0"
+    plot_bg = "#1e293b"
+    primary_color = "#38bdf8"  # Add this
+    highlight_color = "#0ea5e9"
+
 
 st.markdown(f"""
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
