@@ -304,9 +304,9 @@ elif selected_tab == "🧾 Tax Summary":
 
 # 💹 Profitability
 elif selected_tab == "💹 Profitability":
-    st.title("💹 Profitability Overview")
+    st.title("💹 Profitability")
     st.markdown("Analyze profit composition, quarterly trends, and visualize earnings breakdown.")
-    st.title(f"💹 Profit & Loss Overview - {selected_year}")
+    st.title(f"Profit & Loss Overview - {selected_year}")
 
     total_sales = df_year['sales_Grand Amount'].sum()
     total_purchases = df_year['Purchase Grand Amount'].sum()
