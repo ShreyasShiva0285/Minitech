@@ -377,15 +377,18 @@ fig_pie = px.pie(
     names='GST Type',
     values='Net Payable',
     title='Net GST Payable by Type',
-    hole=0.4  # donut-style
+    hole=0.4
 )
-fig_pie.update_layout(
-    **plotly_layout("Net GST Payable by Type"),
-    showlegend=True,
-    font=dict(color="white"),
-    legend=dict(font=dict(color="white")),
-    title_font=dict(color="white")
-)
+
+layout_config = plotly_layout("Net GST Payable by Type")
+layout_config.update({
+    "showlegend": True,
+    "font": dict(color="white"),
+    "legend": dict(font=dict(color="white")),
+    "title": dict(font=dict(color="white"))  # Fixed key here
+})
+
+fig_pie.update_layout(**layout_config)
 st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
