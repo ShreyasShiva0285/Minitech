@@ -375,26 +375,26 @@ elif selected_tab == "🧾 Tax Summary":
         'Net Payable': "₹{:,.2f}"
     }))
 
-st.subheader("📊 Net GST Payable Distribution")
+    st.subheader("📊 Net GST Payable Distribution")
 
-fig_pie = px.pie(
-    net_gst_df,
-    names='GST Type',
-    values='Net Payable',
-    title='Net GST Payable by Type',
-    hole=0.4
-)
+    fig_pie = px.pie(
+        net_gst_df,
+        names='GST Type',
+        values='Net Payable',
+        title='Net GST Payable by Type',
+        hole=0.4
+    )
 
-layout_config = plotly_layout("Net GST Payable by Type")
-layout_config.update({
-    "showlegend": True,
-    "font": dict(color="white"),
-    "legend": dict(font=dict(color="white")),
-    "title": dict(font=dict(color="white"))
-})
+    layout_config = plotly_layout("Net GST Payable by Type")
+    layout_config.update({
+        "showlegend": True,
+        "font": dict(color="white"),
+        "legend": dict(font=dict(color="white")),
+        "title": dict(font=dict(color="white"))
+    })
 
-fig_pie.update_layout(**layout_config)
-st.plotly_chart(fig_pie, use_container_width=True)
+    fig_pie.update_layout(**layout_config)
+    st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
 
