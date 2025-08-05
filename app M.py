@@ -400,19 +400,24 @@ elif selected_tab == "💹 Profitability":
     gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].sum().sum()
     net_profit = total_sales - total_purchases - gst_out
 
-
-
     st.subheader("📊 Profit Composition Waterfall Chart")
-    fig_waterfall = go.Figure(go.Waterfall(
+        fig_waterfall = go.Figure(go.Waterfall(
         name="Profit Flow",
         orientation="v",
         measure=["relative", "relative", "relative", "total"],
-        x=["Total Sales", "(-) Purchases", "(-) GST Paid", "Net Profit"],
+        x=["Total Sales", "Total Purchases", "GST Out", "Net Profit"],
+        textposition="outside",
+        text=[
+            f"+₹{total_sales:,.2f}",
+            f"-₹{total_purchases:,.2f}",
+            f"-₹{gst_out:,.2f}",
+            f"₹{net_profit:,.2f}"
+        ],
         y=[total_sales, -total_purchases, -gst_out, net_profit],
-        text=[f"₹{total_sales:,.2f}", f"-₹{total_purchases:,.2f}", f"-₹{gst_out:,.2f}", f"₹{net_profit:,.2f}"],
-        connector={"line": {"color": "gray"}}
+        connector={"line": {"color": primary_color}}
     ))
-    fig_waterfall.update_layout(**plotly_layout("Profit Composition Waterfall"))
+
+    fig_waterfall.update_layout(**plotly_layout("Profit Flow Waterfall Chart"))
     st.plotly_chart(fig_waterfall, use_container_width=True)
 
     st.subheader("📅 Quarterly Profit Trend")
