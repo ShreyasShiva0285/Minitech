@@ -400,16 +400,12 @@ elif selected_tab == "🧾 Tax Summary":
         title='Net GST Payable by Type',
         hole=0.4  # donut-style
     )
+fig_pie.update_layout(
+    **plotly_layout("Net GST Payable by Type"),
+    showlegend=True
+)
 
-    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-    fig_pie.update_layout(
-        showlegend=True,
-        font=dict(color=text_color),
-        paper_bgcolor=bg_color,
-        plot_bgcolor=plot_bg,
-    )
-
-    st.plotly_chart(fig_pie, use_container_width=True)
+st.plotly_chart(fig_pie, use_container_width=True)
 
     # Clients and Vendors same as previous version (unchanged)...
 
