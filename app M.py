@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
 # Load your cleaned data
 @st.cache_data
@@ -81,9 +83,6 @@ if selected_tab == "📋 Overview Of the Company":
     profit_margin = net_profit / total_sales * 100 if total_sales else 0
 
     # Forecasting Next Month Sales using Linear Regression
-    from sklearn.linear_model import LinearRegression
-    import numpy as np
-
     monthly_sales = (
         df_year.dropna(subset=['sales_Invoice Date'])
         .groupby(df_year['sales_Invoice Date'].dt.to_period("M"))['sales_Grand Amount']
