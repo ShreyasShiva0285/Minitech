@@ -33,7 +33,6 @@ elif theme == "Modern Blue":
 
 
 st.markdown(f"""
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <style>
         html, body, [class*="css"] {{
             font-family: 'Open Sans', sans-serif;
@@ -41,24 +40,62 @@ st.markdown(f"""
             background-color: {bg_color};
             color: {text_color};
         }}
-        h1, h2, h3, h4 {{
-            color: {text_color};
+
+        /* Heading styles */
+        h1 {{
+            font-size: 40px;
+            font-weight: 700;
+            color: {primary_color};
+            margin-bottom: 1rem;
+        }}
+        h2 {{
+            font-size: 32px;
             font-weight: 600;
+            color: {primary_color};
+            margin-bottom: 0.75rem;
         }}
-        .stMetric {{
-            background-color: {plot_bg};
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            border-left: 5px solid {primary_color};
+        h3 {{
+            font-size: 24px;
+            font-weight: 500;
+            color: {text_color};
+            margin-bottom: 0.5rem;
         }}
-        .stButton>button:hover {{
-            background-color: {highlight_color};
-            color: white;
+        h4 {{
+            font-size: 20px;
+            font-weight: 500;
+            color: {text_color};
         }}
-        @media (max-width: 768px) {{
-            html, body, [class*="css"] {{
-                font-size: 14px;
-            }}
+
+        /* Paragraph or markdown text */
+        p, div[data-testid="stMarkdownContainer"] {{
+            font-size: 16px;
+            line-height: 1.6;
+        }}
+
+        /* Subheaders (used in st.subheader) */
+        .stHeadingContainer h1 + div, 
+        .stHeadingContainer h2 + div {{
+            font-size: 18px !important;
+            font-weight: 400 !important;
+            color: {text_color};
+        }}
+
+        /* Metric label override */
+        div[data-testid="stMetric"] > label {{
+            font-size: 14px !important;
+            font-weight: 500;
+        }}
+
+        div[data-testid="stMetric"] > div {{
+            font-size: 20px !important;
+            font-weight: 700;
+        }}
+
+        /* Adjust button font */
+        .stButton > button {{
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
         }}
     </style>
 """, unsafe_allow_html=True)
