@@ -261,7 +261,7 @@ if selected_tab == "📋 Overview Of the Company":
     st.markdown("""
         <style>
         .stApp {
-            background-color: #0C969C !important;
+            background-color: #032F30 !important;
         }
         h1, h2, h3, h4, h5, p, span, div {
             color: white !important;
