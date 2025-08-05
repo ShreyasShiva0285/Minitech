@@ -22,16 +22,22 @@ if theme == "Light":
     text_color = "#1f2e3d"
     plot_bg = "#f9f9f9"
     primary_color = "#4a90e2"
+    highlight_color = "#d0e8ff"  # Light blue
+
 elif theme == "Dark":
     bg_color = "#1e1e1e"
     text_color = "#f5f5f5"
     plot_bg = "#2c2c2c"
     primary_color = "#bb86fc"
+    highlight_color = "#333333"  # Dark gray
+
 elif theme == "Modern Blue":
     bg_color = "#0f172a"
     text_color = "#e2e8f0"
     plot_bg = "#1e293b"
     primary_color = "#38bdf8"
+    highlight_color = "#1e40af"  # Blue
+
 
 st.markdown(f"""
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
