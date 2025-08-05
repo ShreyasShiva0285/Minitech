@@ -222,15 +222,17 @@ def plotly_layout(title):
 if selected_tab == "📋 Overview Of the Company":
     st.title("📋 Company Dashboard Overview")
     st.markdown("Welcome to the business intelligence dashboard. Use the sidebar to explore insights.")
-
-    st.title(f" Executive Overview – {selected_year}")
-
+    
+    st.subheader(f"📅 Executive Summary – {selected_year}")
+    
+    # Aggregate KPIs
     total_sales = df_year['sales_Grand Amount'].sum()
     total_purchases = df_year['Purchase Grand Amount'].sum()
     gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].sum().sum()
     gst_in = df_year[['Purchase Tax Amount CGST', 'Purchase Tax Amount SGST', 'Purchase Tax Amount IGST']].sum().sum()
     net_profit = total_sales - total_purchases - gst_out
 
+    # Display KPIs
     col1, col2, col3 = st.columns(3)
     col1.metric("📈 Total Sales", f"₹{total_sales:,.2f}")
     col2.metric("📉 Total Purchases", f"₹{total_purchases:,.2f}")
@@ -239,12 +241,15 @@ if selected_tab == "📋 Overview Of the Company":
     col4, col5 = st.columns(2)
     col4.metric("🧾 GST Collected (Out)", f"₹{gst_out:,.2f}")
     col5.metric("🧾 GST Paid (In)", f"₹{gst_in:,.2f}")
-
+    
     st.markdown("---")
+    st.subheader("📊 Margin & Sales Forecast")
 
-    gross_margin = (total_sales - total_purchases) / total_sales * 100 if total_sales else 0
-    profit_margin = net_profit / total_sales * 100 if total_sales else 0
+    # Calculate margins
+    gross_margin = ((total_sales - total_purchases) / total_sales * 100) if total_sales else 0
+    profit_margin = (net_profit / total_sales * 100) if total_sales else 0
 
+    # Monthly sales for forecasting
     monthly_sales = (
         df_year.dropna(subset=['sales_Invoice Date'])
         .groupby(df_year['sales_Invoice Date'].dt.to_period("M"))['sales_Grand Amount']
@@ -259,14 +264,14 @@ if selected_tab == "📋 Overview Of the Company":
         model = LinearRegression().fit(X, y)
         next_month_num = [[X['Month_Num'].max() + 1]]
         forecast_value = model.predict(next_month_num)[0]
-        forecast_value_display = f"₹{forecast_value:,.2f}"
+        forecast_display = f"₹{forecast_value:,.2f}"
     else:
-        forecast_value_display = "Not enough data"
+        forecast_display = "Not enough data"
 
-    col6, col_forecast, col7 = st.columns(3)
+    col6, col7, col8 = st.columns(3)
     col6.metric("📊 Gross Margin", f"{gross_margin:.2f}%")
-    col_forecast.metric("📅 Next Month Forecast", forecast_value_display)
-    col7.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
+    col7.metric("📅 Next Month Forecast", forecast_display)
+    col8.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
 
 # -------------------- Summary Tab --------------------
 
