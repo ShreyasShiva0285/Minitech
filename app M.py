@@ -15,7 +15,7 @@ import numpy as np
 # -------------------- Styling and Theme Toggle --------------------
 st.set_page_config(layout="wide")
 
-theme = st.sidebar.selectbox("🎨 Select Theme", ["Light", "Dark"])
+theme = st.sidebar.selectbox("🎨 Select Theme", ["Light", "Dark", "Modern Blue"])
 
 if theme == "Light":
     bg_color = "#f9fafc"
@@ -25,6 +25,42 @@ elif theme == "Dark":
     bg_color = "#1e1e1e"
     text_color = "#f5f5f5"
     plot_bg = "#2c2c2c"
+elif theme == "Modern Blue":
+    bg_color = "#0f172a"         # Dark navy (background)
+    text_color = "#e2e8f0"       # Light slate (text)
+    plot_bg = "#1e293b"          # Blue-gray (charts and containers)
+
+st.markdown(f"""
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <style>
+        html, body, [class*="css"] {{
+            font-family: 'Open Sans', sans-serif;
+            font-size: 16px;
+            background-color: {bg_color};
+            color: {text_color};
+        }}
+        h1, h2, h3, h4 {{
+            color: {text_color};
+            font-weight: 600;
+        }}
+        .stMetric {{
+            background-color: {plot_bg};
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border-left: 5px solid {primary_color};
+        }}
+        .stButton>button:hover {{
+            background-color: {highlight_color};
+            color: white;
+        }}
+        @media (max-width: 768px) {{
+            html, body, [class*="css"] {{
+                font-size: 14px;
+            }}
+        }}
+    </style>
+""", unsafe_allow_html=True)
+
 
 # Inject CSS
 st.markdown(f"""
