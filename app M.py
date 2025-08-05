@@ -18,24 +18,20 @@ st.set_page_config(layout="wide")
 theme = st.sidebar.selectbox("🎨 Select Theme", ["Light", "Dark", "Modern Blue"])
 
 if theme == "Light":
-    bg_color = "#f9fafc"
+    bg_color = "#ffffff"
     text_color = "#1f2e3d"
-    plot_bg = "#ffffff"
-    primary_color = "#4a90e2"  # Add this
-    highlight_color = "#357edd"  # Optional, for button hover
+    plot_bg = "#f9f9f9"
+    primary_color = "#4a90e2"
 elif theme == "Dark":
     bg_color = "#1e1e1e"
     text_color = "#f5f5f5"
     plot_bg = "#2c2c2c"
-    primary_color = "#bb86fc"  # Add this
-    highlight_color = "#985eff"
+    primary_color = "#bb86fc"
 elif theme == "Modern Blue":
     bg_color = "#0f172a"
     text_color = "#e2e8f0"
     plot_bg = "#1e293b"
-    primary_color = "#38bdf8"  # Add this
-    highlight_color = "#0ea5e9"
-
+    primary_color = "#38bdf8"
 
 st.markdown(f"""
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
@@ -71,30 +67,33 @@ st.markdown(f"""
 
 # Inject CSS
 st.markdown(f"""
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
     <style>
-        html, body, [class*="css"] {{
-            font-family: 'Open Sans', sans-serif;
-            font-size: 16px;
-            background-color: {bg_color};
+        .main {{
+            background: linear-gradient(to bottom right, #ffffff, #e0f2ff);
             color: {text_color};
         }}
-        @media (max-width: 768px) {{
-            html, body, [class*="css"] {{
-                font-size: 14px;
-            }}
-        }}
-        h1, h2, h3, h4 {{
-            color: {text_color};
-            font-weight: 600;
-        }}
-        .stMetric {{
+
+        div[data-testid="stMetric"] {{
             background-color: {plot_bg};
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border-left: 6px solid {primary_color};
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }}
+
+        /* Make the metric label and value color consistent */
+        div[data-testid="stMetric"] > label, 
+        div[data-testid="stMetric"] > div {{
+            color: {text_color} !important;
+        }}
+
+        /* Optional: style metric columns if needed */
+        .block-container {{
+            padding-top: 2rem;
         }}
     </style>
 """, unsafe_allow_html=True)
+
 
 # -------------------- Data Loader --------------------
 @st.cache_data
