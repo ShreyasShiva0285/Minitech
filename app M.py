@@ -100,6 +100,40 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
+import streamlit as st
+
+# Inject custom CSS for table headers
+st.markdown("""
+    <style>
+    /* General table styling */
+    thead tr th {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 16px;
+        padding: 12px 8px;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    /* Light background → dark text */
+    thead tr th:has(div[data-testid="stMarkdownContainer"]:not([style*="background-color: #"])),
+    thead tr th[style*="background-color: white"],
+    thead tr th[style*="background-color: #f"],
+    thead tr th[style*="background-color: rgb(255"],
+    thead tr th[style*="background-color: rgba(255"] {
+        color: black !important;
+    }
+
+    /* Dark background → white text */
+    thead tr th[style*="background-color: black"],
+    thead tr th[style*="background-color: #000"],
+    thead tr th[style*="background-color: #2c3e50"],
+    thead tr th[style*="background-color: rgb(0"],
+    thead tr th[style*="background-color: rgba(0"] {
+        color: white !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 
 # -------------------- Data Loader --------------------
 @st.cache_data
