@@ -8,28 +8,27 @@ import numpy as np
 # Custom pastel background and style
 st.markdown("""
     <style>
-    /* Set pastel background color */
-    body {
-        background-color: #f9f7f7;
+    /* Sidebar background */
+    section[data-testid="stSidebar"] {
+        background-color: #662249 !important;
     }
 
-    /* Streamlit main content area */
+    /* Optional: Improve contrast for sidebar text */
+    section[data-testid="stSidebar"] * {
+        color: white !important;
+    }
+
+    /* Main app background (optional pastel theme) */
     .stApp {
         background: linear-gradient(to bottom right, #fdf6f0, #f0f7fd);
     }
 
-    /* Card & container styling */
-    .block-container {
-        padding: 2rem;
-        border-radius: 15px;
+    /* Optional: Soften headers and text globally */
+    h1, h2, h3, h4, h5 {
+        color: #333;
     }
 
-    /* Optional: Soften headers and text */
-    h1, h2, h3, h4 {
-        color: #444 !important;
-    }
-
-    /* Optional: Modify metric colors for contrast */
+    /* Optional: Metric blocks */
     div[data-testid="metric-container"] {
         background-color: #ffffff22;
         padding: 1rem;
@@ -38,7 +37,7 @@ st.markdown("""
         color: #333;
     }
 
-    /* Optional: Hide Streamlit watermark */
+    /* Hide Streamlit watermark */
     footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
