@@ -390,7 +390,7 @@ st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
 
-elif selected_tab == "💹 Profitability":
+if selected_tab == "💹 Profitability":
     st.title("💹 Profitability")
     st.title(f"Profit & Loss Overview - {selected_year}")
 
