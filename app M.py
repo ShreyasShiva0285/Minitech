@@ -259,6 +259,14 @@ def plotly_layout(title):
 # -------------------- Overview Tab --------------------
 if selected_tab == "📋 Overview Of the Company":
 
+        st.markdown("""
+        <style>
+        section.main > div:has(.block-container) {
+            background-color: #274D60 !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     st.title("📋 Company Dashboard Overview")
     st.markdown("Welcome to the business intelligence dashboard. Use the sidebar to explore insights.")
     
