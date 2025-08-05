@@ -388,6 +388,8 @@ fig_pie.update_layout(
 st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
+if selected_tab == "📊 Dashboard":
+    st.write("Dashboard content")
 
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability")
@@ -397,6 +399,7 @@ elif selected_tab == "💹 Profitability":
     total_purchases = df_year['Purchase Grand Amount'].sum()
     gst_out = df_year[['sales_Tax Amount CGST', 'sales_Tax Amount SGST', 'sales_Tax Amount IGST']].sum().sum()
     net_profit = total_sales - total_purchases - gst_out
+
 
 
     st.subheader("📊 Profit Composition Waterfall Chart")
