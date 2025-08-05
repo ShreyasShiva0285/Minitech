@@ -133,34 +133,14 @@ st.markdown(f"""
 # Inject custom table styling based on theme
 st.markdown(f"""
     <style>
-    table {{
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-        font-size: 15px;
-    }}
-
     thead tr {{
         background-color: {primary_color};
-        color: white;
-        text-align: left;
     }}
 
-    th, td {{
+    thead th {{
+        color: white !important;
         padding: 12px 15px;
-        border: 1px solid #ddd;
-    }}
-
-    tbody tr:nth-child(even) {{
-        background-color: {highlight_color};
-    }}
-
-    tbody tr:nth-child(odd) {{
-        background-color: {plot_bg};
-    }}
-
-    tbody tr:hover {{
-        background-color: rgba(0, 0, 0, 0.05);
+        text-align: left;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -168,7 +148,6 @@ st.markdown(f"""
 st.markdown(f"""
     <style>
     /* Light background → dark text */
-    thead tr th:has(div[data-testid="stMarkdownContainer"]:not([style*="background-color: #"])),
     thead tr th[style*="background-color: white"],
     thead tr th[style*="background-color: #f"],
     thead tr th[style*="background-color: rgb(255"],
