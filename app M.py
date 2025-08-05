@@ -258,7 +258,7 @@ def plotly_layout(title):
 
 # -------------------- Overview Tab --------------------
 if selected_tab == "📋 Overview Of the Company":
-        st.markdown("""
+    st.markdown("""
         <style>
         .stApp {
             background-color: #274D60 !important;
@@ -272,6 +272,7 @@ if selected_tab == "📋 Overview Of the Company":
         }
         </style>
     """, unsafe_allow_html=True)
+
     st.title("📋 Company Dashboard Overview")
     st.markdown("Welcome to the business intelligence dashboard. Use the sidebar to explore insights.")
     
@@ -301,33 +302,25 @@ if selected_tab == "📋 Overview Of the Company":
     gross_margin = ((total_sales - total_purchases) / total_sales * 100) if total_sales else 0
     profit_margin = (net_profit / total_sales * 100) if total_sales else 0
 
-    # Monthly sales for forecasting
-    monthly_sales = (
-        df_year.dropna(subset=['sales_Invoice Date'])
-        .groupby(df_year['sales_Invoice Date'].dt.to_period("M"))['sales_Grand Amount']
-        .sum().reset_index()
-    )
-    monthly_sales['sales_Invoice Date'] = monthly_sales['sales_Invoice Date'].dt.to_timestamp()
-    monthly_sales['Month_Num'] = np.arange(len(monthly_sales))
+    # Yearly sales forecasting for next year
+    yearly_sales = df.dropna(subset=['sales_Invoice Date']).copy()
+    yearly_sales['Year'] = yearly_sales['sales_Invoice Date'].dt.year
+    yearly_summary = yearly_sales.groupby('Year')['sales_Grand Amount'].sum().reset_index()
 
-    # Forecast total 2026 sales
-    if len(monthly_sales) >= 12:
-        X = monthly_sales[['Month_Num']]
-        y = monthly_sales['sales_Grand Amount']
-        model = LinearRegression().fit(X, y)
-
-        months_in_2026 = 12
-        last_month_num = monthly_sales['Month_Num'].max()
-        future_months = np.arange(last_month_num + 1, last_month_num + months_in_2026 + 1).reshape(-1, 1)
-        forecasted_sales_2026 = model.predict(future_months).sum()
-        forecast_year_display = f"₹{forecasted_sales_2026:,.2f}"
+    if len(yearly_summary) >= 2:
+        yearly_summary['Year_Num'] = yearly_summary['Year'] - yearly_summary['Year'].min()
+        X_year = yearly_summary[['Year_Num']]
+        y_year = yearly_summary['sales_Grand Amount']
+        model_year = LinearRegression().fit(X_year, y_year)
+        next_year_num = [[X_year['Year_Num'].max() + 1]]
+        forecast_value_year = model_year.predict(next_year_num)[0]
+        forecast_display = f"₹{forecast_value_year:,.2f}"
     else:
-        forecast_year_display = "Not enough data"
+        forecast_display = "Not enough data"
 
-    # Display metrics
     col6, col7, col8 = st.columns(3)
     col6.metric("📊 Gross Margin", f"{gross_margin:.2f}%")
-    col7.metric("📈 2026 Forecast Sales", forecast_year_display)
+    col7.metric("📅 2026 Sales Forecast", forecast_display)
     col8.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
 
 # -------------------- Summary Tab --------------------
