@@ -80,8 +80,36 @@ if selected_tab == "📋 Overview Of the Company":
     gross_margin = (total_sales - total_purchases) / total_sales * 100 if total_sales else 0
     profit_margin = net_profit / total_sales * 100 if total_sales else 0
 
-    col6, col7 = st.columns(2)
+    # Forecasting Next Month Sales using Linear Regression
+    from sklearn.linear_model import LinearRegression
+    import numpy as np
+
+    monthly_sales = (
+        df_year.dropna(subset=['sales_Invoice Date'])
+        .groupby(df_year['sales_Invoice Date'].dt.to_period("M"))['sales_Grand Amount']
+        .sum()
+        .reset_index()
+    )
+    monthly_sales['sales_Invoice Date'] = monthly_sales['sales_Invoice Date'].dt.to_timestamp()
+    monthly_sales['Month_Num'] = np.arange(len(monthly_sales))
+
+    if len(monthly_sales) >= 2:  # at least 2 points to fit a line
+        X = monthly_sales[['Month_Num']]
+        y = monthly_sales['sales_Grand Amount']
+
+        model = LinearRegression()
+        model.fit(X, y)
+
+        next_month_num = [[X['Month_Num'].max() + 1]]
+        forecast_value = model.predict(next_month_num)[0]
+        forecast_value_display = f"₹{forecast_value:,.2f}"
+    else:
+        forecast_value_display = "Not enough data"
+
+    # Display Gross Margin, Forecast, Net Profit Margin
+    col6, col_forecast, col7 = st.columns(3)
     col6.metric("📊 Gross Margin", f"{gross_margin:.2f}%")
+    col_forecast.metric("📅 Next Month Forecast", forecast_value_display)
     col7.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
 
     st.markdown("This overview summarizes your key financial health indicators for the selected year.")
