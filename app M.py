@@ -401,22 +401,22 @@ elif selected_tab == "💹 Profitability":
 
     st.subheader("📊 Profit Composition Waterfall Chart")
 
-    fig_waterfall = go.Figure(go.Waterfall(
-        name="Profit Flow",
+        # Build the Waterfall Chart
+    waterfall_fig = go.Figure(go.Waterfall(
+        name="Profit Breakdown",
         orientation="v",
         measure=["absolute", "relative", "relative", "total"],
-        x=["Total Sales", "Purchases", "GST Out", "Net Profit"],
-        textposition="outside",
+        x=["Total Sales", "Total Purchases", "GST Out", "Net Profit"],
         text=[f"₹{total_sales:,.2f}", f"-₹{total_purchases:,.2f}", f"-₹{gst_out:,.2f}", f"₹{net_profit:,.2f}"],
         y=[total_sales, -total_purchases, -gst_out, net_profit],
         connector={"line": {"color": primary_color}},
-        decreasing={"marker": {"color": "#e74c3c"}},  # Red
-        increasing={"marker": {"color": "#2ecc71"}},  # Green
-        totals={"marker": {"color": primary_color}}
+        increasing={"marker": {"color": primary_color}},
+        decreasing={"marker": {"color": "#ef4444"}},
+        totals={"marker": {"color": "#10b981"}}
     ))
 
-    fig_waterfall.update_layout(**plotly_layout("Profit Breakdown (Waterfall)"))
-    st.plotly_chart(fig_waterfall, use_container_width=True)
+    waterfall_fig.update_layout(**plotly_layout("Profit Breakdown Waterfall Chart"))
+    st.plotly_chart(waterfall_fig, use_container_width=True)
 
     st.subheader("📅 Quarterly Profit Trend")
     df_year['Quarter'] = df_year['sales_Invoice Date'].dt.to_period("Q").astype(str)
