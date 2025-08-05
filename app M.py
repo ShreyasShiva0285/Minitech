@@ -388,9 +388,6 @@ fig_pie.update_layout(
 st.plotly_chart(fig_pie, use_container_width=True)
 
 # -------------------- Profitability --------------------
-if selected_tab == "📊 Dashboard":
-    st.write("Dashboard content")
-
 elif selected_tab == "💹 Profitability":
     st.title("💹 Profitability")
     st.title(f"Profit & Loss Overview - {selected_year}")
