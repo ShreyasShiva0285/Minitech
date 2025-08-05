@@ -258,19 +258,24 @@ if selected_tab == "📋 Overview Of the Company":
     monthly_sales['sales_Invoice Date'] = monthly_sales['sales_Invoice Date'].dt.to_timestamp()
     monthly_sales['Month_Num'] = np.arange(len(monthly_sales))
 
-    if len(monthly_sales) >= 2:
+    # Forecast total 2026 sales
+    if len(monthly_sales) >= 12:
         X = monthly_sales[['Month_Num']]
         y = monthly_sales['sales_Grand Amount']
         model = LinearRegression().fit(X, y)
-        next_month_num = [[X['Month_Num'].max() + 1]]
-        forecast_value = model.predict(next_month_num)[0]
-        forecast_display = f"₹{forecast_value:,.2f}"
-    else:
-        forecast_display = "Not enough data"
 
+        months_in_2026 = 12
+        last_month_num = monthly_sales['Month_Num'].max()
+        future_months = np.arange(last_month_num + 1, last_month_num + months_in_2026 + 1).reshape(-1, 1)
+        forecasted_sales_2026 = model.predict(future_months).sum()
+        forecast_year_display = f"₹{forecasted_sales_2026:,.2f}"
+    else:
+        forecast_year_display = "Not enough data"
+
+    # Display metrics
     col6, col7, col8 = st.columns(3)
     col6.metric("📊 Gross Margin", f"{gross_margin:.2f}%")
-    col7.metric("📅 Next Month Forecast", forecast_display)
+    col7.metric("📈 2026 Forecast Sales", forecast_year_display)
     col8.metric("💼 Net Profit Margin", f"{profit_margin:.2f}%")
 
 # -------------------- Summary Tab --------------------
